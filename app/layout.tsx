@@ -21,8 +21,12 @@ import { Fira_Code } from 'next/font/google';
 const fira = Fira_Code({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ntust.live'),
   title: 'NTUST.Live',
-  description: '台科電子直播平台',
+  description: '台科直播平台',
+  openGraph: {
+    images: '/og.png',
+  },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
