@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Room } from "livekit-server-sdk";
 import { signIn, useSession } from "next-auth/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
@@ -55,7 +56,7 @@ export default function Home() {
 
 
           <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
-            建立直播
+            Create Room
           </Button>
 
         </div>
@@ -67,15 +68,15 @@ export default function Home() {
     <main>
       <div className="flex justify-center items-center h-full">
         <div className="grid gap-4">
-          <Label className="text-center text-base">
-            登入以建立直播
+          <Label className="text-center text-muted-foreground">
+            Welcome !!!
           </Label>
           {/* <Separator /> */}
           <Button onClick={() => signIn("github")}>
-            透過 Github 登入
+            <span className="pr-2"><Image src="/github.svg" alt="GitHub" width={16} height={16} /></span>Sign in with GitHub
           </Button>
           <Button onClick={() => signIn("google")}>
-            透過 Google 登入
+            <span className="pr-2"><Image src="/google.svg" alt="Google" width={16} height={16} /></span>Sign in with Google
           </Button>
         </div>
       </div>

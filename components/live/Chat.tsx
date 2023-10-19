@@ -159,11 +159,11 @@ export function MyChatEntry({
             <PopoverContent>
               {owner?.link === users.find((user) => user.name === entry.from?.name)?.id ? (
                 <Button onClick={() => update(owner, "")} variant="secondary" className="mr-4">
-                  取消連麥
+                  Disconnect
                 </Button>
               ) : (
                 <Button onClick={() => update(owner, users.find((user) => user.name === entry.from?.name)?.id)} variant="secondary" className="mr-4">
-                  連麥
+                  Connect
                 </Button>
               )}
             </PopoverContent>

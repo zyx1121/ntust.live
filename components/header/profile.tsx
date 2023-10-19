@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useContext } from "react";
 
 import { UsersContext } from "@/components/provider/users";
@@ -41,13 +41,13 @@ export default function MyProfile() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="my-2">
-          個人資料
+          Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="my-2">
-          商城
+          Store
         </DropdownMenuItem>
         <DropdownMenuItem className="my-2">
-          點數
+          Point
           <DropdownMenuShortcut>{users.find((user) => user.name === session.user?.name)?.point}</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -58,29 +58,15 @@ export default function MyProfile() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="mt-2" onClick={() => signOut({ callbackUrl: "/" })}>
-          登出
+          Login out
           <DropdownMenuShortcut>👋</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
   else return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="m-1 relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback></AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 p-2" align="end" forceMount>
-        <DropdownMenuItem className="mb-2" onClick={() => signIn("github")}>
-          透過 Github 登入
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => signIn("google")}>
-          透過 Google 登入
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Avatar className="h-8 w-8">
+      <AvatarFallback></AvatarFallback>
+    </Avatar>
   );
 }

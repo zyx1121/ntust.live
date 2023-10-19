@@ -23,7 +23,7 @@ const fira = Fira_Code({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL('https://ntust.live'),
   title: 'NTUST.Live',
-  description: '台科直播平台',
+  description: 'NTUST Live Streaming Platform',
   openGraph: {
     images: '/og.png',
   },
@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const users = await prisma.user.findMany()
 
   return (
-    <html lang="zh-tw" className={fira.className} suppressHydrationWarning>
+    <html lang="en" className={fira.className} suppressHydrationWarning>
       <body className="w-screen grid gap-0" style={{ height: "100dvh", gridTemplateRows: "3.5rem 1px" }}>
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MySessionProvider session={session}>
