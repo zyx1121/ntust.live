@@ -1,15 +1,14 @@
 # ntust.live
 
-![image](https://github.com/zyx1121/ntust.live/blob/main/public/og.png)
+<img style="width:100%;" alt="7777777" src="/public/og.png">
 
 ## 功能
 - [x] 直播（視訊、音訊、螢幕）
 - [x] 聊天室
-- [x] 連麥（可選對象）
+- [x] 連麥
 - [x] 第三方登錄（Github、Google）
 - [x] 主題選擇（暗色、亮色、系統）
-- [x] 桌機、手機響應式排版
-- [x] 在線直播清單
+- [x] 直播清單
 - [ ] 匿名觀看
 - [ ] 信箱登陸
 - [ ] 禮物
