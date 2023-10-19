@@ -13,6 +13,8 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
+import confetti from 'canvas-confetti';
+
 export default function Home() {
   let { data: session } = useSession()
   let { users } = useContext(UsersContext);
@@ -41,6 +43,10 @@ export default function Home() {
     }, 3000);
     return () => clearInterval(id);
   }, [])
+
+  const handleConfetti = () => {
+    confetti();
+  };
 
   if (session) return (
     <main>
@@ -73,6 +79,7 @@ export default function Home() {
             )}
           </ScrollArea>
           <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
+            {/* <Button onClick={() => handleConfetti()}> */}
             Create Room
           </Button>
         </div>
