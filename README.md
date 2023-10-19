@@ -1,6 +1,8 @@
 # ntust.live
 
-### 功能
+![image](https://github.com/zyx1121/ntust.live/blob/main/public/og.png)
+
+## 功能
 - [x] 直播（視訊、音訊、螢幕）
 - [x] 聊天室
 - [x] 連麥（可選對象）
@@ -14,9 +16,9 @@
 - [ ] 商城
 - [ ] 廣告
 
-### 技術資源
+## 技術資源
 - Framework : [Next.js](https://nextjs.org)
-- UI/UX : [TailwindCSS](https://tailwindcss.com), [shadcn/ui](https://ui.shadcn.com)
-- Database : [PostgreSQL](https://www.postgresql.org), [Prisma](https://www.prisma.io)
+- UI/UX : [TailwindCSS](https://tailwindcss.com) [shadcn/ui](https://ui.shadcn.com)
+- Database : [PostgreSQL](https://www.postgresql.org) [Prisma](https://www.prisma.io)
 - WebRTC : [LiveKit](https://livekit.io)
-- Cloud : [Vercel](https://vercel.com/zyx1121s-projects), [LiveKitCloud](https://livekit.io/cloud)
+- Cloud : [Vercel](https://vercel.com/zyx1121s-projects) [LiveKitCloud](https://livekit.io/cloud)
