@@ -39,14 +39,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MySessionProvider session={session}>
             <MyUsersProvider users={users}>
-              <header className=" w-screen py-2 px-4 flex gap-2 justify-end" >
+              <header className=" w-screen py-3 px-4 flex gap-2 justify-end" >
                 <div className='m-auto ml-0'>
                   <Label className="mx-2" asChild>
                     <Link href="/">
                       NTUST.Live
                     </Link>
                   </Label>
-                  <Badge variant="secondary" className='h-5 my-auto'>demo</Badge>
+                  <Badge variant="secondary" className='h-5 my-auto'>
+                    demo
+                  </Badge>
                 </div>
                 <ThemeToggle />
                 <MyProfile />

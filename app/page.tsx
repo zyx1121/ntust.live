@@ -20,16 +20,23 @@ export default function Home() {
   const router = useRouter();
 
   const [rooms, setRooms] = useState([]);
+  const getRooms = async () => {
+    try {
+      const resp = await fetch(`/api/room?user=${session?.user?.name}`, { method: 'GET' });
+      const data = await resp.json();
+      setRooms(data.rooms);
+    } catch (e) {
+      console.log(e);
+    }
+  }
   useEffect(() => {
-    (async () => {
-      try {
-        const resp = await fetch(`/api/room?user=${session?.user?.name}`, { method: 'GET' });
-        const data = await resp.json();
-        setRooms(data.rooms);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
+    getRooms();
+  }, [])
+  useEffect(() => {
+    let id = setInterval(() => {
+      getRooms();
+    }, 5000);
+    return () => clearInterval(id);
   }, [])
 
   if (session) return (
@@ -37,21 +44,31 @@ export default function Home() {
       <div className="flex justify-center items-center h-full">
         <div className="grid gap-4">
 
-          <Label className="px-4 text-muted-foreground">
-            {rooms.length} online
-          </Label>
-
-          <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-11rem)] sm:h-[40dvh] sm:w-[40dvw] rounded-md border p-2">
-            {rooms.map((room: Room) => (
+          <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[40dvw] rounded-md border">
+            <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
+              <Label className="flex-1 text-left text-muted-foreground">
+                Name
+              </Label>
+              <Label className="flex-1 text-left text-muted-foreground">
+                Online
+              </Label>
+            </Button>
+            <Separator className="" />
+            {rooms.map((room: Room) => room.numParticipants > 0 &&
               <>
-                <Button variant="ghost" className="w-full p-1" key={room.name} asChild>
+                <Button variant="ghost" className="w-full rounded-none justify-start" key={room.name} asChild>
                   <Link href={room.name}>
-                    {users.find((user) => user.id === room.name)?.name}
+                    <Label className="flex-1 text-left">
+                      {users.find((user) => user.id === room.name)?.name}
+                    </Label>
+                    <Label className="flex-1 text-left">
+                      {room.numParticipants}
+                    </Label>
                   </Link>
                 </Button>
-                <Separator className="my-2" />
+                <Separator className="" />
               </>
-            ))}
+            )}
           </ScrollArea>
 
 

@@ -100,7 +100,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
       </ScrollArea>
 
       <form className="flex gap-3" onSubmit={handleSubmit} >
-        <Input disabled={isSending} ref={inputRef} type="text" placeholder="輸入訊息" />
+        <Input disabled={isSending} ref={inputRef} type="text" placeholder="..." />
         <Button disabled={isSending} type="submit" size="icon" variant="outline" >
           <SendHorizontal className="h-4 w-4 text-foreground" />
         </Button>

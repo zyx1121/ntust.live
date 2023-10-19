@@ -17,7 +17,7 @@ export default function MyProfile() {
   if (session) return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="m-1 relative h-8 w-8 rounded-full">
+        <Button variant="ghost" className="h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             {session?.user?.image && session?.user?.name ? (
               <AvatarImage src={session.user.image} alt={session.user.name} />
@@ -28,36 +28,36 @@ export default function MyProfile() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 p-2" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent className="py-3" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal py-2 mx-2">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
+            <p className="text-sm leading-none">
               {session?.user?.name ? (session.user.name) : (null)}
             </p>
-            <p className="py-2 text-xs leading-none text-muted-foreground">
+            <p className="text-xs leading-none text-muted-foreground">
               {session?.user?.email ? (session.user.email) : (null)}
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="my-2">
+        <DropdownMenuSeparator className="m-2" />
+        <DropdownMenuItem className="py-2 mx-2">
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem className="my-2">
+        <DropdownMenuItem className="py-2 mx-2">
           Store
         </DropdownMenuItem>
-        <DropdownMenuItem className="my-2">
+        <DropdownMenuItem className="py-2 mx-2">
           Point
           <DropdownMenuShortcut>{users.find((user) => user.name === session.user?.name)?.point}</DropdownMenuShortcut>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="my-2" asChild>
+        <DropdownMenuSeparator className="m-2" />
+        <DropdownMenuItem className="py-2 mx-2" asChild>
           <Link href="https://github.com/zyx1121/ntust.live" target="_blank" rel="noopener noreferrer">
             Github
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="mt-2" onClick={() => signOut({ callbackUrl: "/" })}>
+        <DropdownMenuSeparator className="m-2" />
+        <DropdownMenuItem className="py-2 mx-2" onClick={() => signOut({ callbackUrl: "/" })}>
           Login out
           <DropdownMenuShortcut>👋</DropdownMenuShortcut>
         </DropdownMenuItem>
