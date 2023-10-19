@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { UsersContext } from "@/components/provider/users";
@@ -9,7 +10,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Room } from "livekit-server-sdk";
 import { signIn, useSession } from "next-auth/react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
@@ -20,6 +20,7 @@ export default function Home() {
   const router = useRouter();
 
   const [rooms, setRooms] = useState([]);
+
   const getRooms = async () => {
     try {
       const resp = await fetch(`/api/room?user=${session?.user?.name}`, { method: 'GET' });
@@ -29,13 +30,15 @@ export default function Home() {
       console.log(e);
     }
   }
+
   useEffect(() => {
     getRooms();
   }, [])
+
   useEffect(() => {
     let id = setInterval(() => {
       getRooms();
-    }, 5000);
+    }, 3000);
     return () => clearInterval(id);
   }, [])
 
@@ -43,7 +46,6 @@ export default function Home() {
     <main>
       <div className="flex justify-center items-center h-full">
         <div className="grid gap-4">
-
           <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[40dvw] rounded-md border">
             <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
               <Label className="flex-1 text-left text-muted-foreground">
@@ -53,7 +55,7 @@ export default function Home() {
                 Online
               </Label>
             </Button>
-            <Separator className="" />
+            <Separator />
             {rooms.map((room: Room) => room.numParticipants > 0 &&
               <>
                 <Button variant="ghost" className="w-full rounded-none justify-start" key={room.name} asChild>
@@ -70,12 +72,9 @@ export default function Home() {
               </>
             )}
           </ScrollArea>
-
-
           <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
             Create Room
           </Button>
-
         </div>
       </div>
     </main >
@@ -88,7 +87,6 @@ export default function Home() {
           <Label className="text-center text-muted-foreground">
             Welcome !!!
           </Label>
-          {/* <Separator /> */}
           <Button onClick={() => signIn("github")}>
             <span className="pr-2"><Image src="/github.svg" alt="GitHub" width={16} height={16} /></span>Sign in with GitHub
           </Button>
