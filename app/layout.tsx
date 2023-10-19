@@ -2,7 +2,7 @@ import '@/app/globals.css';
 
 import type { Metadata } from 'next';
 
-import MyProfile from '@/components/header/profile';
+import MyAvatar from '@/components/header/avatar';
 import MySessionProvider from '@/components/provider/session';
 import MyUsersProvider from '@/components/provider/users';
 import prisma from '@/lib/prisma';
@@ -51,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </Badge>
                 </div>
                 <ThemeToggle />
-                <MyProfile />
+                <MyAvatar />
               </header>
               <Separator />
               {children}

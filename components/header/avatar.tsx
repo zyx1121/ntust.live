@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 
-import { signOut, useSession } from "next-auth/react";
-import { useContext } from "react";
-
 import { UsersContext } from "@/components/provider/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useContext } from "react";
 
-export default function MyProfile() {
+export default function MyAvatar() {
   const { data: session } = useSession()
   const { users } = useContext(UsersContext);
+
+  const router = useRouter();
 
   if (session) return (
     <DropdownMenu>
