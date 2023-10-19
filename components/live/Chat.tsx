@@ -15,29 +15,14 @@ import { useRouter } from "next/navigation";
 import { useContext, useRef } from 'react';
 
 import type { Observable } from 'rxjs';
-export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
-  messageFormatter?: MessageFormatter;
-  messageEncoder?: MessageEncoder;
-  messageDecoder?: MessageDecoder;
-  room: string;
-}
 
-export function cloneSingleChild(
-  children: React.ReactNode | React.ReactNode[],
-  props?: Record<string, any>,
-  key?: any,
-) {
-  return React.Children.map(children, (child) => {
-    if (React.isValidElement(child) && React.Children.only(children)) {
-      return React.cloneElement(child, { ...props, key });
-    }
-    return child;
-  });
-}
+export type MessageFormatter = (message: string) => React.ReactNode;
+export type MessageEncoder = (message: ChatMessage) => Uint8Array;
+export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage;
+
 export function useObservableState<T>(observable: Observable<T> | undefined, startWith: T) {
   const [state, setState] = React.useState<T>(startWith);
   React.useEffect(() => {
-    // observable state doesn't run in SSR
     if (typeof window === 'undefined' || !observable) return;
     const subscription = observable.subscribe(setState);
     return () => subscription.unsubscribe();
@@ -45,10 +30,7 @@ export function useObservableState<T>(observable: Observable<T> | undefined, sta
   return state;
 }
 
-export function useChat(options?: {
-  messageEncoder?: MessageEncoder;
-  messageDecoder?: MessageDecoder;
-}) {
+export function useChat(options?: { messageEncoder?: MessageEncoder, messageDecoder?: MessageDecoder }) {
   const room = useRoomContext();
   const [setup, setSetup] = React.useState<ReturnType<typeof setupChat>>();
   const isSending = useObservableState(setup?.isSendingObservable as Observable<boolean> | undefined, false);
@@ -63,6 +45,12 @@ export function useChat(options?: {
   return { send: setup?.send, chatMessages, isSending };
 }
 
+export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
+  messageFormatter?: MessageFormatter;
+  messageEncoder?: MessageEncoder;
+  messageDecoder?: MessageDecoder;
+  room: string;
+}
 export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, ...props }: ChatProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
@@ -98,7 +86,6 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
         </ul>
         <div ref={divRef} />
       </ScrollArea>
-
       <form className="flex gap-3" onSubmit={handleSubmit} >
         <Input disabled={isSending} ref={inputRef} type="text" placeholder="..." />
         <Button disabled={isSending} type="submit" size="icon" variant="outline" >
@@ -109,22 +96,12 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
   );
 }
 
-export type MessageFormatter = (message: string) => React.ReactNode;
-
-export type MessageEncoder = (message: ChatMessage) => Uint8Array;
-
-export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage;
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   room: string;
   entry: ReceivedChatMessage;
   messageFormatter?: MessageFormatter;
 }
-export function MyChatEntry({
-  room,
-  entry,
-  messageFormatter,
-  ...props
-}: ChatEntryProps) {
+export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEntryProps) {
   const formattedMessage = React.useMemo(() => {
     return messageFormatter ? messageFormatter(entry.message) : entry.message;
   }, [entry.message, messageFormatter]);

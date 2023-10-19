@@ -6,7 +6,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
-import { Room } from '@/components/live/Room';
+import { Room } from '@/components/live/room';
 import { UsersContext } from '@/components/provider/users';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
