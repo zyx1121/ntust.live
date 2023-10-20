@@ -1,12 +1,14 @@
 
 import { Chat } from "@/components/live/chat";
-import { ControlBar, GridLayout, LayoutContextProvider, RoomAudioRenderer, useCreateLayoutContext, useLocalParticipant, useTracks } from "@livekit/components-react";
+import { Label } from "@/components/ui/label";
+import { ControlBar, GridLayout, LayoutContextProvider, RoomAudioRenderer, useCreateLayoutContext, useLocalParticipant, useParticipants, useTracks } from "@livekit/components-react";
 import { User } from "@prisma/client";
 import { RoomEvent, Track } from "livekit-client";
 import { ParticipantTile } from "./participan";
 
 export function Room({ room, users }: { room: string, users: User[] }) {
   const lp = useLocalParticipant().localParticipant;
+  const ps = useParticipants();
 
   const streamer = room;
   const linker = users.find((user) => user.id === room)?.link;
@@ -23,7 +25,7 @@ export function Room({ room, users }: { room: string, users: User[] }) {
     (track) => track.participant?.identity == streamer || track.participant?.identity === linker
   );
 
-  return (
+  if (ps.find((p) => p.identity === room)) return (
     <div className="lk-video-conference p-4 gap-4 bg-background">
       <LayoutContextProvider value={layoutContext} >
         <div className="lk-video-conference-inner lg:h-full h-[calc(100dvh-9rem-1px)] border rounded-lg">
@@ -43,4 +45,12 @@ export function Room({ room, users }: { room: string, users: User[] }) {
       <RoomAudioRenderer />
     </div>
   );
+
+  else return (
+    <div className="flex justify-center items-center h-full bg-background text-muted-foreground">
+      <Label>
+        The Live has not started
+      </Label>
+    </div>
+  )
 }

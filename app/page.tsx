@@ -33,26 +33,26 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    getRooms();
-  }, [])
-
-  useEffect(() => {
-    let id = setInterval(() => {
+  if (session) {
+    useEffect(() => {
       getRooms();
-    }, 3000);
-    return () => clearInterval(id);
-  }, [])
+    }, [])
 
-  const handleConfetti = () => {
-    confetti();
-  };
+    useEffect(() => {
+      let id = setInterval(() => {
+        getRooms();
+      }, 3000);
+      return () => clearInterval(id);
+    }, [])
 
-  if (session) return (
-    <main>
-      <div className="flex justify-center items-center h-full">
+    const handleConfetti = () => {
+      confetti();
+    };
+
+    return (
+      <main className="flex justify-center items-center h-full">
         <div className="grid gap-4">
-          <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[40dvw] rounded-md border">
+          <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
             <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
               <Label className="flex-1 text-left text-muted-foreground">
                 Name
@@ -80,28 +80,26 @@ export default function Home() {
           </ScrollArea>
           <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
             {/* <Button onClick={() => handleConfetti()}> */}
-            Create Room
+            Start Live
           </Button>
         </div>
-      </div>
-    </main >
-  )
+      </main >
+    )
+  }
 
   return (
-    <main>
-      <div className="flex justify-center items-center h-full">
-        <div className="grid gap-4">
-          <Label className="text-center text-muted-foreground">
-            Welcome !!!
-          </Label>
-          <Button onClick={() => signIn("github")}>
-            <span className="pr-2"><Image src="/github.svg" alt="GitHub" width={16} height={16} /></span>Sign in with GitHub
-          </Button>
-          <Button onClick={() => signIn("google")}>
-            <span className="pr-2"><Image src="/google.svg" alt="Google" width={16} height={16} /></span>Sign in with Google
-          </Button>
-        </div>
+    <main className="flex justify-center items-center h-full">
+      <div className="grid gap-4">
+        <Label className="text-center text-muted-foreground">
+          Welcome !!!
+        </Label>
+        <Button onClick={() => signIn("github")}>
+          <span className="pr-2"><Image src="/github.svg" alt="GitHub" width={16} height={16} /></span>Sign in with GitHub
+        </Button>
+        <Button onClick={() => signIn("google")}>
+          <span className="pr-2"><Image src="/google.svg" alt="Google" width={16} height={16} /></span>Sign in with Google
+        </Button>
       </div>
-    </main>
+    </main >
   )
 }

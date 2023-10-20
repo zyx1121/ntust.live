@@ -8,6 +8,7 @@ import MyUsersProvider from '@/components/provider/users';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
 
+import { Path } from '@/components/header/path';
 import { ThemeToggle } from '@/components/header/theme';
 import { MyThemeProvider } from '@/components/provider/theme';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +50,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   <Badge variant="secondary" className='h-5 my-auto'>
                     demo
                   </Badge>
+                  <Path />
                 </div>
                 <ThemeToggle />
                 <MyAvatar />

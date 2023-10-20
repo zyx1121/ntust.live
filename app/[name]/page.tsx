@@ -2,15 +2,19 @@
 
 import '@livekit/components-styles';
 
-import { signIn, useSession } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
-import { useContext, useEffect, useState } from 'react';
+import Image from "next/image";
 
 import { Room } from '@/components/live/room';
 import { UsersContext } from '@/components/provider/users';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { LiveKitRoom } from '@livekit/components-react';
+import { signIn, useSession } from 'next-auth/react';
+import { Fira_Code } from 'next/font/google';
+import { usePathname } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
+
+const fira = Fira_Code({ subsets: ['latin'] })
 
 export default function Page() {
   let { data: session } = useSession()
@@ -37,15 +41,14 @@ export default function Page() {
   if (!session) return (
     <main className="flex justify-center items-center h-full">
       <div className="grid gap-4">
-        <Label className="text-center text-base">
-          登入以觀看直播
+        <Label className="text-center text-muted-foreground">
+          Login to start watching
         </Label>
-        {/* <Separator /> */}
         <Button onClick={() => signIn("github")}>
-          透過 Github 登入
+          <span className="pr-2"><Image src="/github.svg" alt="GitHub" width={16} height={16} /></span>Sign in with GitHub
         </Button>
         <Button onClick={() => signIn("google")}>
-          透過 Google 登入
+          <span className="pr-2"><Image src="/google.svg" alt="Google" width={16} height={16} /></span>Sign in with Google
         </Button>
       </div>
     </main>
@@ -53,7 +56,7 @@ export default function Page() {
 
   if (token === "") return (
     <main className="flex justify-center items-center h-full">
-      ...
+      Waiting for token...
     </main>
   )
 
@@ -67,6 +70,7 @@ export default function Page() {
         video={control}
         audio={control}
         style={{ height: '100%' }}
+        className={fira.className}
       >
         <Room room={room} users={users} />
       </LiveKitRoom>
