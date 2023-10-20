@@ -15,7 +15,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Observable } from 'rxjs';
 
-export type MessageFormatter = (message: string) => React.ReactNode;
 export type MessageEncoder = (message: ChatMessage) => Uint8Array;
 export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage;
 
@@ -95,6 +94,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
   );
 }
 
+export type MessageFormatter = (message: string) => React.ReactNode;
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   room: string;
   entry: ReceivedChatMessage;
