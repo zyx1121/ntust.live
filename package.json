@@ -32,7 +32,7 @@
     "livekit-client": "^1.13.4",
     "livekit-server-sdk": "^1.2.6",
     "lucide-react": "^0.285.0",
-    "next": "^13.5.5",
+    "next": "13.5.5",
     "next-auth": "^4.23.2",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",

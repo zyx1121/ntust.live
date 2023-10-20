@@ -1,5 +1,4 @@
 import MyAvatar from '@/components/live/avatar';
-import React from 'react';
 
 import { UsersContext } from "@/components/provider/users";
 import { Button } from '@/components/ui/button';
@@ -12,17 +11,16 @@ import { ChatMessage, ReceivedChatMessage, useRoomContext } from '@livekit/compo
 import { User } from "@prisma/client";
 import { SendHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Observable } from 'rxjs';
 
-export type MessageFormatter = (message: string) => React.ReactNode;
 export type MessageEncoder = (message: ChatMessage) => Uint8Array;
 export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage;
 
 export function useObservableState<T>(observable: Observable<T> | undefined, startWith: T) {
-  const [state, setState] = React.useState<T>(startWith);
-  React.useEffect(() => {
+  const [state, setState] = useState<T>(startWith);
+  useEffect(() => {
     if (typeof window === 'undefined' || !observable) return;
     const subscription = observable.subscribe(setState);
     return () => subscription.unsubscribe();
@@ -32,11 +30,11 @@ export function useObservableState<T>(observable: Observable<T> | undefined, sta
 
 export function useChat(options?: { messageEncoder?: MessageEncoder, messageDecoder?: MessageDecoder }) {
   const room = useRoomContext();
-  const [setup, setSetup] = React.useState<ReturnType<typeof setupChat>>();
+  const [setup, setSetup] = useState<ReturnType<typeof setupChat>>();
   const isSending = useObservableState(setup?.isSendingObservable as Observable<boolean> | undefined, false);
   const chatMessages = useObservableState(setup?.messageObservable as Observable<ReceivedChatMessage[]> | undefined, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const setupChatReturn = setupChat(room, options);
     setSetup(setupChatReturn);
     return setupChatReturn.destroy;
@@ -52,10 +50,10 @@ export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
   room: string;
 }
 export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, ...props }: ChatProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
 
-  const chatOptions = React.useMemo(() => {
+  const chatOptions = useMemo(() => {
     return { messageDecoder, messageEncoder };
   }, [messageDecoder, messageEncoder]);
 
@@ -72,7 +70,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     divRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chatMessages]);
 
@@ -81,7 +79,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
       <ScrollArea className="h-[8.5rem] lg:h-[calc(100dvh-9rem-1px)] lg:border rounded-lg pb-4">
         <ul>
           {chatMessages.map((msg, idx) =>
-            <MyChatEntry room={room} key={idx} entry={msg} messageFormatter={messageFormatter} />
+            <MyChatEntry key={idx} room={room} entry={msg} messageFormatter={messageFormatter} />
           )}
         </ul>
         <div ref={divRef} />
@@ -96,13 +94,14 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
   );
 }
 
+export type MessageFormatter = (message: string) => React.ReactNode;
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   room: string;
   entry: ReceivedChatMessage;
   messageFormatter?: MessageFormatter;
 }
 export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEntryProps) {
-  const formattedMessage = React.useMemo(() => {
+  const formattedMessage = useMemo(() => {
     return messageFormatter ? messageFormatter(entry.message) : entry.message;
   }, [entry.message, messageFormatter]);
   const time = new Date(entry.timestamp);
