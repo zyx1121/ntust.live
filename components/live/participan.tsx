@@ -1,3 +1,4 @@
+import { Label } from '@/components/ui/label';
 import { ParticipantClickEvent, TrackReferenceOrPlaceholder } from '@livekit/components-core';
 import { AudioTrack, ParticipantContextIfNeeded, VideoTrack, useEnsureParticipant, useMaybeTrackContext, useParticipantTile } from '@livekit/components-react';
 import { Participant, Track, TrackPublication } from "livekit-client";
@@ -36,24 +37,22 @@ export function ParticipantTile({
   });
 
   return (
-    <div style={{ position: 'relative' }} {...elementProps}>
+    <div className="relative" {...elementProps}>
       <ParticipantContextIfNeeded participant={trackRef.participant}>
         {trackRef.publication?.kind === 'video' ||
           trackRef.source === Track.Source.Camera ||
           trackRef.source === Track.Source.ScreenShare ? (
-          <VideoTrack
-            participant={trackRef.participant}
-            source={trackRef.source}
-            publication={trackRef.publication}
+          <VideoTrack className='bg-background'
             manageSubscription={true}
           />
         ) : (
-          <AudioTrack
-            participant={trackRef.participant}
-            source={trackRef.source}
-            publication={trackRef.publication}
-          />
+          <AudioTrack />
         )}
+        <div className="lk-participant-placeholder">
+          <Label className="text-muted-foreground">
+            NO SOURCE
+          </Label>
+        </div>
       </ParticipantContextIfNeeded>
     </div >
   );

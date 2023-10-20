@@ -28,8 +28,8 @@ export function Room({ room, users }: { room: string, users: User[] }) {
   if (ps.find((p) => p.identity === room)) return (
     <div className="lk-video-conference p-4 gap-4 bg-background">
       <LayoutContextProvider value={layoutContext} >
-        <div className="lk-video-conference-inner lg:h-full h-[calc(100dvh-9rem-1px)] border rounded-lg">
-          <GridLayout tracks={hostTracks}>
+        <div className="lk-video-conference-inner lg:h-[calc(100dvh-5.5rem-1px)] h-[calc(100dvh-9rem-1px)] border rounded-md">
+          <GridLayout className="h-[200px]" tracks={hostTracks}>
             <ParticipantTile />
           </GridLayout>
         </div>

@@ -56,7 +56,9 @@ export default function Page() {
 
   if (token === "") return (
     <main className="flex justify-center items-center h-full">
-      Waiting for token...
+      <Label className="text-center text-muted-foreground">
+        Waiting for token...
+      </Label>
     </main>
   )
 
@@ -79,7 +81,9 @@ export default function Page() {
 
   return (
     <main className="flex justify-center items-center h-full">
-      404
+      <Label className="text-center text-muted-foreground">
+        404
+      </Label>
     </main>
   )
 }

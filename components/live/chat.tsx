@@ -76,7 +76,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
 
   return (
     <div {...props} className="grid gap-4" >
-      <ScrollArea className="h-[8.5rem] lg:h-[calc(100dvh-9rem-1px)] lg:border rounded-lg pb-4">
+      <ScrollArea className="h-[8.5rem] lg:h-[calc(100dvh-9rem-1px)] lg:border rounded-md pb-4">
         <ul>
           {chatMessages.map((msg, idx) =>
             <MyChatEntry key={idx} room={room} entry={msg} messageFormatter={messageFormatter} />
@@ -85,8 +85,8 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
         <div ref={divRef} />
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
-        <Input disabled={isSending} ref={inputRef} type="text" placeholder="..." />
-        <Button disabled={isSending} type="submit" size="icon" variant="outline" >
+        <Input className="rounded-md" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
+        <Button className="rounded-md" disabled={isSending} type="submit" size="icon" variant="outline" >
           <SendHorizontal className="h-4 w-4 text-foreground" />
         </Button>
       </form>
