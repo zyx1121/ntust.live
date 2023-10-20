@@ -94,7 +94,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
   );
 }
 
-export type MessageFormatter = (message: string) => React.ReactNode;
+export type MessageFormatter = (message: string) => string;
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   room: string;
   entry: ReceivedChatMessage;
