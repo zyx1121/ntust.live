@@ -33,59 +33,57 @@ export default function Home() {
     }
   }
 
-  if (session) {
-    useEffect(() => {
+  useEffect(() => {
+    getRooms();
+  }, [])
+
+  useEffect(() => {
+    let id = setInterval(() => {
       getRooms();
-    }, [])
+    }, 3000);
+    return () => clearInterval(id);
+  }, [])
 
-    useEffect(() => {
-      let id = setInterval(() => {
-        getRooms();
-      }, 3000);
-      return () => clearInterval(id);
-    }, [])
+  const handleConfetti = () => {
+    confetti();
+  };
 
-    const handleConfetti = () => {
-      confetti();
-    };
-
-    return (
-      <main className="flex justify-center items-center h-full">
-        <div className="grid gap-4">
-          <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
-            <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
-              <Label className="flex-1 text-left text-muted-foreground">
-                Name
-              </Label>
-              <Label className="flex-1 text-left text-muted-foreground">
-                Online
-              </Label>
-            </Button>
-            <Separator />
-            {rooms.map((room: Room) => room.numParticipants > 0 &&
-              <>
-                <Button variant="ghost" className="w-full rounded-none justify-start" key={room.name} asChild>
-                  <Link href={room.name}>
-                    <Label className="flex-1 text-left">
-                      {users.find((user) => user.id === room.name)?.name}
-                    </Label>
-                    <Label className="flex-1 text-left">
-                      {room.numParticipants}
-                    </Label>
-                  </Link>
-                </Button>
-                <Separator className="" />
-              </>
-            )}
-          </ScrollArea>
-          <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
-            {/* <Button onClick={() => handleConfetti()}> */}
-            Start Live
+  if (session) return (
+    <main className="flex justify-center items-center h-full">
+      <div className="grid gap-4">
+        <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
+          <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
+            <Label className="flex-1 text-left text-muted-foreground">
+              Name
+            </Label>
+            <Label className="flex-1 text-left text-muted-foreground">
+              Online
+            </Label>
           </Button>
-        </div>
-      </main >
-    )
-  }
+          <Separator />
+          {rooms.map((room: Room) => room.numParticipants > 0 &&
+            <>
+              <Button variant="ghost" className="w-full rounded-none justify-start" key={room.name} asChild>
+                <Link href={room.name}>
+                  <Label className="flex-1 text-left">
+                    {users.find((user) => user.id === room.name)?.name}
+                  </Label>
+                  <Label className="flex-1 text-left">
+                    {room.numParticipants}
+                  </Label>
+                </Link>
+              </Button>
+              <Separator className="" />
+            </>
+          )}
+        </ScrollArea>
+        <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
+          {/* <Button onClick={() => handleConfetti()}> */}
+          Start Live
+        </Button>
+      </div>
+    </main >
+  )
 
   return (
     <main className="flex justify-center items-center h-full">
