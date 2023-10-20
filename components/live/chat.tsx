@@ -11,7 +11,7 @@ import { ChatMessage, ReceivedChatMessage, useRoomContext } from '@livekit/compo
 import { User } from "@prisma/client";
 import { SendHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { Observable } from 'rxjs';
 
@@ -100,8 +100,13 @@ export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   entry: ReceivedChatMessage;
   messageFormatter?: MessageFormatter;
 }
-export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEntryProps) {
-  const formattedMessage = useMemo(() => {
+export function MyChatEntry({
+  room,
+  entry,
+  messageFormatter,
+  ...props
+}: ChatEntryProps) {
+  const formattedMessage = React.useMemo(() => {
     return messageFormatter ? messageFormatter(entry.message) : entry.message;
   }, [entry.message, messageFormatter]);
   const time = new Date(entry.timestamp);
