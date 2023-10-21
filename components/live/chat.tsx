@@ -130,10 +130,10 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
         <div className="mb-auto mt-0">
           <Popover>
             <PopoverTrigger>
-              <MyAvatar name={entry.from?.name} />
+              <MyAvatar identity={entry.from?.identity} />
             </PopoverTrigger>
             <PopoverContent>
-              {owner?.link === users.find((user) => user.name === entry.from?.name)?.id ? (
+              {owner?.link === entry.from?.identity ? (
                 <Button onClick={() => update(owner, "")} variant="secondary" className="mr-4">
                   Disconnect
                 </Button>

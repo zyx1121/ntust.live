@@ -11,7 +11,7 @@ export function Room({ room, users }: { room: string, users: User[] }) {
   const ps = useParticipants();
 
   const streamer = room;
-  const linker = users.find((user) => user.id === room)?.link;
+  let linker = users.find((user) => user.id === room)?.link;
 
   const layoutContext = useCreateLayoutContext();
 
