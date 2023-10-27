@@ -49,7 +49,7 @@ export function Room({ room, users }: { room: string, users: User[] }) {
   else return (
     <div className="flex justify-center items-center h-full bg-background text-muted-foreground">
       <Label>
-        The Live has not started
+        Waiting for host...
       </Label>
     </div>
   )
