@@ -1,27 +1,25 @@
 'use client'
 
-import Image from "next/image";
-import Link from "next/link";
+import confetti from 'canvas-confetti'
+import Image from "next/image"
+import Link from "next/link"
 
-import { UsersContext } from "@/components/provider/users";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Room } from "livekit-server-sdk";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
-
-import confetti from 'canvas-confetti';
+import { UsersContext } from '@/components/provider/users'
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Room } from "livekit-server-sdk"
+import { signIn, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useContext, useEffect, useState } from "react"
 
 export default function Home() {
-  let { data: session } = useSession()
-  let { users } = useContext(UsersContext);
+  const router = useRouter()
+  const session = useSession().data
+  const users = useContext(UsersContext).users
 
-  const router = useRouter();
-
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState([])
 
   const getRooms = async () => {
     try {

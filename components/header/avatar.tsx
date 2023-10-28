@@ -10,7 +10,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 
-export default function MyAvatar() {
+export function MyAvatar() {
   const { data: session } = useSession()
   const { users } = useContext(UsersContext);
 

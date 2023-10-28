@@ -2,24 +2,21 @@ import '@/app/globals.css';
 
 import type { Metadata } from 'next';
 
-import MyAvatar from '@/components/header/avatar';
-import MySessionProvider from '@/components/provider/session';
-import MyUsersProvider from '@/components/provider/users';
-import prisma from '@/lib/prisma';
-import Link from 'next/link';
+import { MySessionProvider } from '@/components/provider/session';
 
-import { Path } from '@/components/header/path';
-import { ThemeToggle } from '@/components/header/theme';
+import { Header } from '@/components/header/header';
 import { MyThemeProvider } from '@/components/provider/theme';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
+import MyUsersProvider from '@/components/provider/users';
 import { Separator } from '@/components/ui/separator';
-import { authOptions } from '@/lib/options';
+import prisma from '@/lib/prisma';
+import { cn } from '@/lib/utils';
 import { Analytics } from '@vercel/analytics/react';
-import { getServerSession } from 'next-auth';
 import { Fira_Code } from 'next/font/google';
 
-const fira = Fira_Code({ subsets: ['latin'] })
+export const fira = Fira_Code({
+  subsets: ['latin'],
+  variable: "--font-mono",
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ntust.live'),
@@ -31,30 +28,14 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions)
   const users = await prisma.user.findMany()
-
   return (
-    <html lang="en" className={fira.className} suppressHydrationWarning>
-      <body className="w-screen grid gap-0" style={{ height: "100dvh", gridTemplateRows: "3.5rem 1px" }}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn("min-h-screen bg-background font-mono antialiased grid", fira.variable)} style={{ gridTemplateRows: "3.5rem 1px" }}>
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <MySessionProvider session={session}>
+          <MySessionProvider>
             <MyUsersProvider users={users}>
-              <header className=" w-screen py-3 px-4 flex gap-2 justify-end" >
-                <div className='m-auto ml-0'>
-                  <Label className="mx-2" asChild>
-                    <Link href="/">
-                      NTUST.Live
-                    </Link>
-                  </Label>
-                  <Badge variant="secondary" className='h-5 my-auto'>
-                    demo
-                  </Badge>
-                  <Path />
-                </div>
-                <ThemeToggle />
-                <MyAvatar />
-              </header>
+              <Header />
               <Separator />
               {children}
               <Analytics />
