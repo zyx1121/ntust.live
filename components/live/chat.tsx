@@ -1,78 +1,90 @@
-import MyAvatar from '@/components/live/avatar';
+import MyAvatar from "@/components/live/avatar"
 
-import { UsersContext } from "@/components/provider/users";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { setupChat } from '@livekit/components-core';
-import { ChatMessage, ReceivedChatMessage, useRoomContext } from '@livekit/components-react';
-import { User } from "@prisma/client";
-import { SendHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { UsersContext } from "@/components/provider/users"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { setupChat } from "@livekit/components-core"
+import { ChatMessage, ReceivedChatMessage, useRoomContext } from "@livekit/components-react"
+import { User } from "@prisma/client"
+import { LocalParticipant } from "livekit-client"
+import { SendHorizontal } from "lucide-react"
+import { useRouter } from "next/navigation"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 
-import type { Observable } from 'rxjs';
+import type { Observable } from "rxjs"
 
-export type MessageEncoder = (message: ChatMessage) => Uint8Array;
-export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage;
+export type MessageEncoder = (message: ChatMessage) => Uint8Array
+export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage
 
 export function useObservableState<T>(observable: Observable<T> | undefined, startWith: T) {
-  const [state, setState] = useState<T>(startWith);
+  const [state, setState] = useState<T>(startWith)
   useEffect(() => {
-    if (typeof window === 'undefined' || !observable) return;
-    const subscription = observable.subscribe(setState);
-    return () => subscription.unsubscribe();
-  }, [observable]);
-  return state;
+    if (typeof window === "undefined" || !observable) return
+    const subscription = observable.subscribe(setState)
+    return () => subscription.unsubscribe()
+  }, [observable])
+  return state
 }
 
 export function useChat(options?: { messageEncoder?: MessageEncoder, messageDecoder?: MessageDecoder }) {
-  const room = useRoomContext();
-  const [setup, setSetup] = useState<ReturnType<typeof setupChat>>();
-  const isSending = useObservableState(setup?.isSendingObservable as Observable<boolean> | undefined, false);
-  const chatMessages = useObservableState(setup?.messageObservable as Observable<ReceivedChatMessage[]> | undefined, []);
+  const room = useRoomContext()
+  const [setup, setSetup] = useState<ReturnType<typeof setupChat>>()
+  const isSending = useObservableState(setup?.isSendingObservable as Observable<boolean> | undefined, false)
+  const chatMessages = useObservableState(setup?.messageObservable as Observable<ReceivedChatMessage[]> | undefined, [])
 
   useEffect(() => {
-    const setupChatReturn = setupChat(room, options);
-    setSetup(setupChatReturn);
-    return setupChatReturn.destroy;
-  }, [room, options]);
+    const setupChatReturn = setupChat(room, options)
+    setSetup(setupChatReturn)
+    return setupChatReturn.destroy
+  }, [room, options])
 
-  return { send: setup?.send, chatMessages, isSending };
+  return { send: setup?.send, chatMessages, isSending }
 }
 
 export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
-  messageFormatter?: MessageFormatter;
-  messageEncoder?: MessageEncoder;
-  messageDecoder?: MessageDecoder;
-  room: string;
+  messageFormatter?: MessageFormatter
+  messageEncoder?: MessageEncoder
+  messageDecoder?: MessageDecoder
+  room: string
+  lp: LocalParticipant
 }
-export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, ...props }: ChatProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const divRef = useRef<HTMLDivElement>(null);
+export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, lp, ...props }: ChatProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const divRef = useRef<HTMLDivElement>(null)
 
   const chatOptions = useMemo(() => {
-    return { messageDecoder, messageEncoder };
-  }, [messageDecoder, messageEncoder]);
+    return { messageDecoder, messageEncoder }
+  }, [messageDecoder, messageEncoder])
 
-  const { send, chatMessages, isSending } = useChat(chatOptions);
+  const { send, chatMessages, isSending} = useChat(chatOptions)
+
+  const join = async () => {
+    if (send) await send(`加入了直播間`)
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      join()
+    }, 3000)
+  }, [send])
 
   async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (inputRef.current && inputRef.current.value.trim() !== '') {
+    event.preventDefault()
+    if (inputRef.current && inputRef.current.value.trim() !== "") {
       if (send) {
-        await send(inputRef.current.value);
-        inputRef.current.value = '';
-        inputRef.current.focus();
+        await send(inputRef.current.value)
+        inputRef.current.value = ""
+        inputRef.current.focus()
       }
     }
   }
 
   useEffect(() => {
     divRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [chatMessages]);
+  }, [chatMessages])
 
   return (
     <div {...props} className="grid gap-4" >
@@ -91,41 +103,41 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, .
         </Button>
       </form>
     </div>
-  );
+  )
 }
 
-export type MessageFormatter = (message: string) => string;
+export type MessageFormatter = (message: string) => string
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
-  room: string;
-  entry: ReceivedChatMessage;
-  messageFormatter?: MessageFormatter;
+  room: string
+  entry: ReceivedChatMessage
+  messageFormatter?: MessageFormatter
 }
 export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEntryProps) {
   const formattedMessage = useMemo(() => {
-    return messageFormatter ? messageFormatter(entry.message) : entry.message;
-  }, [entry.message, messageFormatter]);
-  const time = new Date(entry.timestamp);
-  const locale = navigator ? navigator.language : 'en-US';
+    return messageFormatter ? messageFormatter(entry.message) : entry.message
+  }, [entry.message, messageFormatter])
+  const time = new Date(entry.timestamp)
+  const locale = navigator ? navigator.language : "en-US"
 
-  let { users } = useContext(UsersContext);
+  let { users } = useContext(UsersContext)
 
-  const owner = users.find((user) => user.id === room);
+  const owner = users.find((user) => user.id === room)
 
-  const router = useRouter();
+  const router = useRouter()
   const update = async (owner: User | undefined, link: string | undefined) => {
     await fetch(`/api/link?id=${owner?.id}&link=${link}`, {
       method: "PATCH",
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: owner?.id,
         link: link,
       }),
-    });
-    router.refresh();
-  };
+    })
+    router.refresh()
+  }
 
   return (
-    <li className="lk-chat-entry p-4 pb-0" title={time.toLocaleTimeString(locale, { timeStyle: 'full' })} data-lk-message-origin={entry.from?.isLocal ? 'local' : 'remote'} {...props}>
+    <li className="lk-chat-entry p-4 pb-0" title={time.toLocaleTimeString(locale, { timeStyle: "full" })} data-lk-message-origin={entry.from?.isLocal ? "local" : "remote"} {...props}>
       <div className="flex gap-2">
         <div className="mb-auto mt-0">
           <Popover>
@@ -145,11 +157,11 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
             </PopoverContent>
           </Popover>
         </div>
-        <Label className="h-6 leading-6 text-muted-foreground" style={{ whiteSpace: 'nowrap' }}>{entry.from?.name}</Label>
-        <span className='box-border break-words w-fit p-0 leading-6 text-foreground bg-transparent' style={{ wordBreak: "break-word" }}>
+        <Label className="h-6 leading-6 text-muted-foreground" style={{ whiteSpace: "nowrap" }}>{entry.from?.name}</Label>
+        <span className="box-border break-words w-fit p-0 leading-6 text-foreground bg-transparent" style={{ wordBreak: "break-word" }}>
           {formattedMessage}
         </span>
       </div>
     </li >
-  );
+  )
 }

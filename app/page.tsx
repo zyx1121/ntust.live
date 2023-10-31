@@ -15,7 +15,7 @@ import { useContext, useEffect, useState } from "react"
 
 export default function Home() {
   const router = useRouter()
-  const session = useSession().data
+  const session = useSession()
   const users = useContext(UsersContext).users
 
   const [rooms, setRooms] = useState([])
@@ -24,7 +24,7 @@ export default function Home() {
 
   const getRooms = async () => {
     try {
-      const resp = await fetch(`/api/room?user=${session?.user?.name}`, { method: 'GET' });
+      const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' });
       const data = await resp.json();
       setRooms(data.rooms);
     } catch (e) {
@@ -51,7 +51,7 @@ export default function Home() {
     <main className="flex justify-center items-center h-full">
       <div className="grid gap-4">
         <Label className='pl-2'>
-          {activeRooms.length > 0 ? '目前有 ' + activeRooms.length + ' 個直播中的房間' : '目前沒有直播中的房間😭'}
+          {activeRooms.length > 0 ? '目前有 ' + activeRooms.length + ' 個直播中的房間' : '目前沒有直播中的房間'}
         </Label>
         <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-11.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
           <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
@@ -79,10 +79,18 @@ export default function Home() {
             </>
           )}
         </ScrollArea>
-        <Button variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
+        {session.status == "authenticated" ?
+        <Button variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === session.data?.user?.name)?.id}`)}>
           {/* <Button onClick={() => handleConfetti()}> */}
           開始直播🔥🔥
         </Button>
+        :
+        <Button variant="outline" disabled={true}>
+          <Link href="/">
+            登入以建立直播
+          </Link>
+        </Button>
+        }
       </div>
     </main >
   )

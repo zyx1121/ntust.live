@@ -1,14 +1,13 @@
 'use client'
 
-import Image from "next/image";
 import Link from "next/link";
 
+import { Login } from "@/components/login";
 import { UsersContext } from "@/components/provider/users";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 
@@ -70,34 +69,6 @@ export function MyAvatar() {
     </DropdownMenu>
   );
   else return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="secondary" className="h-8">
-          登入
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent className=" rounded-lg">
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            登入以使用更多功能！
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-          </AlertDialogDescription>
-          <Button variant="secondary" onClick={() => signIn("github")}>
-            <span className="pr-2">
-              <Image src="/github.svg" alt="GitHub" width={16} height={16} />
-            </span>透過 GitHub 登入
-          </Button>
-          <Button variant="secondary" onClick={() => signIn("google")}>
-            <span className="pr-2">
-              <Image src="/google.svg" alt="Google" width={16} height={16} />
-            </span>透過 Google 登入
-          </Button>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>先不了，我再想想</AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Login/>
   );
 }

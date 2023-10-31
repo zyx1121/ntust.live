@@ -50,7 +50,7 @@ export function ParticipantTile({
         )}
         <div className="lk-participant-placeholder">
           <Label className="text-muted-foreground">
-            NO SOURCE
+            主播尚未開啟視訊
           </Label>
         </div>
       </ParticipantContextIfNeeded>
