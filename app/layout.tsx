@@ -1,17 +1,14 @@
-import '@/app/globals.css';
-
-import type { Metadata } from 'next';
-
-import { MySessionProvider } from '@/components/provider/session';
-
-import { Header } from '@/components/header/header';
-import { MyThemeProvider } from '@/components/provider/theme';
-import MyUsersProvider from '@/components/provider/users';
-import { Separator } from '@/components/ui/separator';
-import prisma from '@/lib/prisma';
-import { cn } from '@/lib/utils';
-import { Analytics } from '@vercel/analytics/react';
-import { Fira_Code } from 'next/font/google';
+import '@/app/globals.css'
+import { Header } from '@/components/header/header'
+import { MySessionProvider } from '@/components/provider/session'
+import { MyThemeProvider } from '@/components/provider/theme'
+import { MyUsersProvider } from '@/components/provider/users'
+import { Separator } from '@/components/ui/separator'
+import prisma from '@/lib/prisma'
+import { cn } from '@/lib/utils'
+import { Analytics } from '@vercel/analytics/react'
+import type { Metadata } from 'next'
+import { Fira_Code } from 'next/font/google'
 
 export const fira = Fira_Code({
   subsets: ['latin'],
