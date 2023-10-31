@@ -2,10 +2,7 @@ import { Chat } from "@/components/live/chat"
 import { ControlBar, GridLayout, RoomAudioRenderer, useLocalParticipant, useParticipants, useTracks } from "@livekit/components-react"
 import { User } from "@prisma/client"
 import { RoomEvent, Track } from "livekit-client"
-import Link from "next/link"
 import { Badge } from "../ui/badge"
-import { Button } from "../ui/button"
-import { Label } from "../ui/label"
 import { ParticipantTile } from "./participan"
 
 export function Room({ room, users }: { room: string, users: User[] }) {
@@ -26,17 +23,6 @@ export function Room({ room, users }: { room: string, users: User[] }) {
   )
 
   return (
-    <>
-    {(ps && !ps.find((p) => p.identity == streamer)) &&
-      <div className=" absolute flex flex-col gap-4 w-full h-full items-center justify-center flex-grow z-50 backdrop-blur">
-        <Label>直播尚未開始</Label>
-        <Button variant="secondary" asChild>
-          <Link href="/">
-            返回首頁
-          </Link>
-        </Button>
-      </div>
-    }
     <div className="relative flex items-stretch h-full p-4 gap-4 bg-background">
       <div className="flex flex-col items-stretch w-full lg:h-[calc(100dvh-5.5rem-1px)] h-[calc(100dvh-9rem-1px)] border rounded-md">
         <GridLayout className="h-[200px]" tracks={hostTracks}>
@@ -56,6 +42,5 @@ export function Room({ room, users }: { room: string, users: User[] }) {
       )}
       <RoomAudioRenderer />
     </div>
-    </>
   )
 }
