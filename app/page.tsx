@@ -20,6 +20,8 @@ export default function Home() {
 
   const [rooms, setRooms] = useState([])
 
+  const activeRooms = rooms.filter((room: Room) => room.numParticipants > 0)
+
   const getRooms = async () => {
     try {
       const resp = await fetch(`/api/room?user=${session?.user?.name}`, { method: 'GET' });
@@ -48,13 +50,16 @@ export default function Home() {
   return (
     <main className="flex justify-center items-center h-full">
       <div className="grid gap-4">
-        <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
+        <Label className='pl-2'>
+          {activeRooms.length > 0 ? '目前有 ' + activeRooms.length + ' 個直播中的房間' : '目前沒有直播中的房間😭'}
+        </Label>
+        <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-11.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
           <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
             <Label className="flex-1 text-left text-muted-foreground">
-              Name
+              直播間
             </Label>
             <Label className="flex-1 text-left text-muted-foreground">
-              Online
+              觀看人數
             </Label>
           </Button>
           <Separator />
@@ -74,9 +79,9 @@ export default function Home() {
             </>
           )}
         </ScrollArea>
-        <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
+        <Button variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
           {/* <Button onClick={() => handleConfetti()}> */}
-          Start Live
+          開始直播🔥🔥
         </Button>
       </div>
     </main >
