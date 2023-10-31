@@ -1,7 +1,6 @@
 'use client'
 
 import confetti from 'canvas-confetti'
-import Image from "next/image"
 import Link from "next/link"
 
 import { UsersContext } from '@/components/provider/users'
@@ -10,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Room } from "livekit-server-sdk"
-import { signIn, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 
@@ -46,7 +45,7 @@ export default function Home() {
     confetti();
   };
 
-  if (session) return (
+  return (
     <main className="flex justify-center items-center h-full">
       <div className="grid gap-4">
         <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-9.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
@@ -78,22 +77,6 @@ export default function Home() {
         <Button onClick={() => router.push(`/${users.find((user) => user.name === session?.user?.name)?.id}`)}>
           {/* <Button onClick={() => handleConfetti()}> */}
           Start Live
-        </Button>
-      </div>
-    </main >
-  )
-
-  return (
-    <main className="flex justify-center items-center h-full">
-      <div className="grid gap-4">
-        <Label className="text-center text-muted-foreground">
-          Welcome !!!
-        </Label>
-        <Button onClick={() => signIn("github")}>
-          <span className="pr-2"><Image src="/github.svg" alt="GitHub" width={16} height={16} /></span>Sign in with GitHub
-        </Button>
-        <Button onClick={() => signIn("google")}>
-          <span className="pr-2"><Image src="/google.svg" alt="Google" width={16} height={16} /></span>Sign in with Google
         </Button>
       </div>
     </main >

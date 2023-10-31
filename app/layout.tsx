@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const users = await prisma.user.findMany()
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-mono antialiased grid", fira.variable)} style={{ gridTemplateRows: "3.5rem 1px" }}>
+      <body className={cn("min-h-[100dvh] bg-background font-mono antialiased grid", fira.variable)} style={{ gridTemplateRows: "3.5rem 1px" }}>
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MySessionProvider>
             <MyUsersProvider users={users}>
