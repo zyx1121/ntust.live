@@ -15,7 +15,7 @@ import { useContext, useEffect, useState } from "react"
 
 export default function Home() {
   const router = useRouter()
-  const session = useSession()
+  const {data, status} = useSession()
   const users = useContext(UsersContext).users
 
   const [rooms, setRooms] = useState([])
@@ -24,9 +24,9 @@ export default function Home() {
 
   const getRooms = async () => {
     try {
-      const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' });
-      const data = await resp.json();
-      setRooms(data.rooms);
+      const resp = await fetch(`/api/room?user=${data!.user?.name}`, { method: 'GET' });
+      const d = await resp.json();
+      setRooms(d.rooms);
     } catch (e) {
       console.log(e);
     }
@@ -79,8 +79,8 @@ export default function Home() {
             </>
           )}
         </ScrollArea>
-        {session.status == "authenticated" ?
-        <Button variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === session.data?.user?.name)?.id}`)}>
+        {status == "authenticated" ?
+        <Button variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === data.user?.name)?.id}`)}>
           {/* <Button onClick={() => handleConfetti()}> */}
           開始直播🔥🔥
         </Button>
