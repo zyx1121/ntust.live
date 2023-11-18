@@ -97,8 +97,8 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
         <div ref={divRef} />
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
-        <Input className="rounded-md" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
-        <Button className="rounded-md" disabled={isSending} type="submit" size="icon" variant="outline" >
+        <Input className="rounded-md border border-border text-foreground" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
+        <Button className="rounded-md border border-border text-foreground" disabled={isSending} type="submit" size="icon" variant="outline" >
           <SendHorizontal className="h-4 w-4 text-foreground" />
         </Button>
       </form>
