@@ -15,7 +15,7 @@ import { useContext, useEffect, useState } from "react"
 
 export default function Home() {
   const router = useRouter()
-  const {data, status} = useSession()
+  const {data: data, status: status} = useSession()
   const users = useContext(UsersContext).users
 
   const [rooms, setRooms] = useState([])
@@ -24,21 +24,22 @@ export default function Home() {
 
   const getRooms = async () => {
     try {
-      const resp = await fetch(`/api/room?user=${data!.user?.name}`, { method: 'GET' });
-      const d = await resp.json();
-      setRooms(d.rooms);
+      const resp = await fetch(`/api/room?user=${data?.user?.name}`, { method: 'GET' })
+      const d = await resp.json()
+      setRooms(d.rooms)
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
   }
 
   useEffect(() => {
-    getRooms();
+    getRooms()
   }, [])
 
   useEffect(() => {
     let id = setInterval(() => {
       getRooms();
+      console.log('get rooms');
     }, 3000);
     return () => clearInterval(id);
   }, [])
