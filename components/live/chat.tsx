@@ -1,5 +1,4 @@
 import MyAvatar from "@/components/live/avatar"
-
 import { UsersContext } from "@/components/provider/users"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,11 +8,11 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { setupChat } from "@livekit/components-core"
 import { ChatMessage, ReceivedChatMessage, useRoomContext } from "@livekit/components-react"
 import { User } from "@prisma/client"
-import { LocalParticipant } from "livekit-client"
-import { SendHorizontal } from "lucide-react"
+import confetti from "canvas-confetti"
+import { DataPacket_Kind, LocalParticipant, RemoteParticipant, RoomEvent } from "livekit-client"
+import { Gift, SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
-
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import type { Observable } from "rxjs"
 
 export type MessageEncoder = (message: ChatMessage) => Uint8Array
@@ -59,7 +58,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     return { messageDecoder, messageEncoder }
   }, [messageDecoder, messageEncoder])
 
-  const { send, chatMessages, isSending} = useChat(chatOptions)
+  const { send, chatMessages, isSending } = useChat(chatOptions)
 
   const join = async () => {
     if (send) await send(`加入了直播間`)
@@ -86,6 +85,46 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     divRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chatMessages])
 
+  // gift
+  const sendGiftLock = useRef(false)
+  const [gift, setGift] = useState("")
+  const roomContext = useRoomContext()
+  const textEncoder = useRef(new TextEncoder())
+  const textDecoder = useRef(new TextDecoder())
+
+  const sendGiftHandle = useCallback((gift: string) => {
+    confetti()
+    sendGift(gift)
+  }, [gift])
+
+  const sendGift = useCallback(async (gift: string) => {
+    try {
+      const payload: Uint8Array = new TextEncoder().encode(
+        JSON.stringify({ payload: gift, channelId: "gift" })
+      )
+      await lp.publishData(payload, DataPacket_Kind.LOSSY)
+    } finally {
+
+    }
+  }, [lp, gift])
+
+  const onDataChannel = useCallback(
+    (payload: Uint8Array, participant: RemoteParticipant | undefined) => {
+      if (!participant) return console.log("no participant");
+      const data = JSON.parse(textDecoder.current.decode(payload));
+      if (data.channelId === "gift") {
+        confetti()
+      }
+    }, []
+  )
+
+  useEffect(() => {
+    roomContext.on(RoomEvent.DataReceived, onDataChannel)
+    return () => {
+      roomContext.off(RoomEvent.DataReceived, onDataChannel)
+    }
+  }, [onDataChannel, roomContext])
+
   return (
     <div {...props} className="grid gap-4" >
       <ScrollArea className="h-[8.5rem] lg:h-[calc(100dvh-9rem-1px)] lg:border rounded-md pb-4">
@@ -98,6 +137,9 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
         <Input className="rounded-md border border-border text-foreground" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
+        <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" onClick={() => sendGiftHandle("test")}>
+          <Gift className="h-4 w-4 text-foreground"/>
+        </Button>
         <Button className="rounded-md border border-border text-foreground" disabled={isSending} type="submit" size="icon" variant="outline" >
           <SendHorizontal className="h-4 w-4 text-foreground" />
         </Button>
@@ -136,7 +178,7 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
     router.refresh()
   }
 
-  return (
+  if (formattedMessage !== "abc") return (
     <li className="lk-chat-entry p-4 pb-0" title={time.toLocaleTimeString(locale, { timeStyle: "full" })} data-lk-message-origin={entry.from?.isLocal ? "local" : "remote"} {...props}>
       <div className="flex gap-2">
         <div className="mb-auto mt-0">
