@@ -4,6 +4,7 @@ import { MySessionProvider } from '@/components/provider/session'
 import { MyThemeProvider } from '@/components/provider/theme'
 import { MyUsersProvider } from '@/components/provider/users'
 import { Separator } from '@/components/ui/separator'
+import { Toaster } from '@/components/ui/toaster'
 import prisma from '@/lib/prisma'
 import { cn } from '@/lib/utils'
 import { Analytics } from '@vercel/analytics/react'
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Header />
               <Separator />
               {children}
+              <Toaster />
               <Analytics />
             </MyUsersProvider>
           </MySessionProvider>

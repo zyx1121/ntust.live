@@ -68,7 +68,7 @@ export default function Page({ params }: { params: { room: string } }) {
         style={{ height: "100%" }}
         className={fira.className}
       >
-        <Room room={room} users={users} />
+        <Room room={room} users={users} authenticated={true} />
       </LiveKitRoom>
     </main>
   )
@@ -84,7 +84,7 @@ export default function Page({ params }: { params: { room: string } }) {
         style={{ height: "100%" }}
         className={fira.className}
       >
-        <Room room={room} users={users} />
+        <Room room={room} users={users} authenticated={false}/>
       </LiveKitRoom>
     </main>
   )

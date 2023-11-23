@@ -5,7 +5,7 @@ import { RoomEvent, Track } from "livekit-client"
 import { Badge } from "../ui/badge"
 import { ParticipantTile } from "./participan"
 
-export function Room({ room, users }: { room: string, users: User[] }) {
+export function Room({ room, users, authenticated }: { room: string, users: User[], authenticated: boolean }) {
   const lp = useLocalParticipant().localParticipant
   const ps = useParticipants()
 
@@ -30,13 +30,13 @@ export function Room({ room, users }: { room: string, users: User[] }) {
         </GridLayout>
       </div>
       <div className="fixed bottom-4 w-[calc(100%-2rem)] lg:static lg:w-[40rem]" >
-        <Chat room={room} lp={lp} />
+        <Chat room={room} lp={lp} authenticated={authenticated}/>
       </div>
       <Badge variant="secondary" className="absolute top-8 left-8">
         在線 {ps.length}
       </Badge>
       {(lp.identity == streamer) || (lp.identity == linker) ? (
-        <ControlBar className="absolute top-14 left-5 p-0" style={{border: "none"}} variation='minimal' controls={{ leave: false, camera: true, microphone: true, screenShare: true, chat: false }} />
+        <ControlBar className="absolute top-14 left-5 p-0" style={{ border: "none" }} variation='minimal' controls={{ leave: false, camera: true, microphone: true, screenShare: true, chat: false }} />
       ) : (
         null
       )}

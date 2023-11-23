@@ -1,10 +1,13 @@
 import MyAvatar from "@/components/live/avatar"
 import { UsersContext } from "@/components/provider/users"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useToast } from "@/components/ui/use-toast"
 import { setupChat } from "@livekit/components-core"
 import { ChatMessage, ReceivedChatMessage, useRoomContext } from "@livekit/components-react"
 import { User } from "@prisma/client"
@@ -14,6 +17,7 @@ import { Gift, SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import type { Observable } from "rxjs"
+
 
 export type MessageEncoder = (message: ChatMessage) => Uint8Array
 export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage
@@ -49,10 +53,15 @@ export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
   messageDecoder?: MessageDecoder
   room: string
   lp: LocalParticipant
+  authenticated: boolean
 }
-export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, lp, ...props }: ChatProps) {
+export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, lp, authenticated, ...props }: ChatProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
+
+  const { toast } = useToast()
+
+  const { users } = useContext(UsersContext)
 
   const chatOptions = useMemo(() => {
     return { messageDecoder, messageEncoder }
@@ -92,10 +101,37 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const textEncoder = useRef(new TextEncoder())
   const textDecoder = useRef(new TextDecoder())
 
-  const sendGiftHandle = useCallback((gift: string) => {
+  const router = useRouter()
+  const update = async (point : string) => {
+    await fetch(`/api/users?id=${lp.identity}&point=${point}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: lp.identity,
+        point: point,
+      }),
+    })
+    router.refresh()
+  }
+
+  const [point, setPoint] = useState(0)
+  const [pointLock, setPointLock] = useState(false)
+
+  if (lp.identity && !pointLock) {
+    console.log("lp", lp.identity)
+    console.log("point", users.find((user) => user.id === lp.identity)?.point)
+    setPoint(users.find((user) => user.id === lp.identity)?.point as number)
+    if (lp.identity) setPointLock(true)
+  }
+
+  const sendGiftHandle = useCallback(async (point: number, gift: string) => {
+    console.log("prePoint", point)
+    setPoint(point - 10)
+    console.log("afterPoint", point)
+    update((point - 10).toString())
     confetti()
     sendGift(gift)
-  }, [gift])
+  }, [gift]);
 
   const sendGift = useCallback(async (gift: string) => {
     try {
@@ -114,6 +150,10 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       const data = JSON.parse(textDecoder.current.decode(payload));
       if (data.channelId === "gift") {
         confetti()
+        toast({
+          title: "收到來自 " + participant.name + " 的禮物！",
+          description: new Date().toLocaleTimeString(),
+        })
       }
     }, []
   )
@@ -137,9 +177,66 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
         <Input className="rounded-md border border-border text-foreground" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
-        <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" onClick={() => sendGiftHandle("test")}>
-          <Gift className="h-4 w-4 text-foreground"/>
-        </Button>
+        {lp.identity !== room && authenticated && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline">
+                <Gift className="h-4 w-4 text-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className=" rounded-lg bg-background mb-3 mr-4 p-2 flex gap-2">
+              <DropdownMenuItem key={0} asChild>
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button className="rounded-sm border border-border text-foreground" size="icon" variant="outline">
+                      🎉
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>贈送 🎉</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        目前持有的點數：{point}
+                        <br/>
+                        將花費 10 點數贈送
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => sendGiftHandle(point, "gift")}>送出</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuItem>
+              <DropdownMenuItem key={1}>🎊</DropdownMenuItem>
+              <DropdownMenuItem key={2}>🧨</DropdownMenuItem>
+              <DropdownMenuItem key={3}>🎁</DropdownMenuItem>
+              <DropdownMenuItem key={4}>🎈</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          // <Dialog>
+          //   <DialogTrigger asChild>
+          //     <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline">
+          //       <Gift className="h-4 w-4 text-foreground" />
+          //     </Button>
+          //   </DialogTrigger>
+          //   <DialogContent>
+          //     <DialogHeader>
+          //       <DialogTitle>
+          //         發送禮物
+          //       </DialogTitle>
+          //       <DialogDescription>
+          //         目前持有的點數：{lp.identity}
+          //       </DialogDescription>
+          //     </DialogHeader>
+          //     <DialogClose asChild>
+          //       <Button onClick={() => sendGiftHandle("gift")} className="rounded-md border border-border text-foreground" size="icon" variant="outline">
+          //         🎉
+          //       </Button>
+          //     </DialogClose>
+          //   </DialogContent>
+          // </Dialog>
+        )}
         <Button className="rounded-md border border-border text-foreground" disabled={isSending} type="submit" size="icon" variant="outline" >
           <SendHorizontal className="h-4 w-4 text-foreground" />
         </Button>
