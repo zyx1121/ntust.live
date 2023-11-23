@@ -47,6 +47,67 @@ export function useChat(options?: { messageEncoder?: MessageEncoder, messageDeco
   return { send: setup?.send, chatMessages, isSending }
 }
 
+export function Gift0() {
+  confetti({
+    angle: 60,
+    spread: 55,
+    origin: { x: 0, y: 1 }
+  })
+  confetti({
+    angle: 120,
+    spread: 55,
+    origin: { x: 1, y: 1 }
+  })
+  setTimeout(() => {
+    confetti({
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.8 },
+    })
+    confetti({
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.8 },
+    })
+  }, 200)
+  setTimeout(() => {
+    confetti({
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.6 },
+    })
+    confetti({
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.6 },
+    })
+  }, 400)
+  setTimeout(() => {
+    confetti({
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.4 },
+    })
+    confetti({
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.4 },
+    })
+  }, 600)
+  setTimeout(() => {
+    confetti({
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.2 },
+    })
+    confetti({
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.2 },
+    })
+  }, 800)
+}
+
 export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
   messageFormatter?: MessageFormatter
   messageEncoder?: MessageEncoder
@@ -102,7 +163,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const textDecoder = useRef(new TextDecoder())
 
   const router = useRouter()
-  const update = async (point : string) => {
+  const update = async (point: string) => {
     await fetch(`/api/users?id=${lp.identity}&point=${point}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -125,11 +186,18 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   }
 
   const sendGiftHandle = useCallback(async (point: number, gift: string) => {
-    console.log("prePoint", point)
-    setPoint(point - 10)
-    console.log("afterPoint", point)
-    update((point - 10).toString())
-    confetti()
+    switch (gift) {
+      case "🎉":
+        setPoint(point - 10)
+        update((point - 10).toString())
+        confetti()
+        break
+      case "🎊":
+        setPoint(point - 100)
+        update((point - 100).toString())
+        Gift0()
+        break
+    }
     sendGift(gift)
   }, [gift]);
 
@@ -149,9 +217,16 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       if (!participant) return console.log("no participant");
       const data = JSON.parse(textDecoder.current.decode(payload));
       if (data.channelId === "gift") {
-        confetti()
+        switch (data.payload) {
+          case "🎉":
+            confetti()
+            break
+          case "🎊":
+            Gift0()
+            break
+        }
         toast({
-          title: "收到來自 " + participant.name + " 的禮物！",
+          title: "收到來自 " + participant.name + " 的 " + data.payload + " !",
           description: new Date().toLocaleTimeString(),
         })
       }
@@ -197,45 +272,49 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                       <AlertDialogTitle>贈送 🎉</AlertDialogTitle>
                       <AlertDialogDescription>
                         目前持有的點數：{point}
-                        <br/>
+                        <br />
                         將花費 10 點數贈送
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>取消</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => sendGiftHandle(point, "gift")}>送出</AlertDialogAction>
+                      <AlertDialogAction onClick={() => sendGiftHandle(point, "🎉")}>送出</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </DropdownMenuItem>
-              <DropdownMenuItem key={1}>🎊</DropdownMenuItem>
+              <DropdownMenuItem key={1} asChild>
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button className="rounded-sm border border-border text-foreground" size="icon" variant="outline">
+                      🎊
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>贈送 🎉</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        目前持有的點數：{point}
+                        <br />
+                        將花費 100 點數贈送
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      {point >= 100 ? (
+                        <AlertDialogAction onClick={() => sendGiftHandle(point, "🎊")}>送出</AlertDialogAction>
+                      ) : (
+                        <AlertDialogAction >送出</AlertDialogAction>
+                      )}
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuItem>
               <DropdownMenuItem key={2}>🧨</DropdownMenuItem>
               <DropdownMenuItem key={3}>🎁</DropdownMenuItem>
               <DropdownMenuItem key={4}>🎈</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          // <Dialog>
-          //   <DialogTrigger asChild>
-          //     <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline">
-          //       <Gift className="h-4 w-4 text-foreground" />
-          //     </Button>
-          //   </DialogTrigger>
-          //   <DialogContent>
-          //     <DialogHeader>
-          //       <DialogTitle>
-          //         發送禮物
-          //       </DialogTitle>
-          //       <DialogDescription>
-          //         目前持有的點數：{lp.identity}
-          //       </DialogDescription>
-          //     </DialogHeader>
-          //     <DialogClose asChild>
-          //       <Button onClick={() => sendGiftHandle("gift")} className="rounded-md border border-border text-foreground" size="icon" variant="outline">
-          //         🎉
-          //       </Button>
-          //     </DialogClose>
-          //   </DialogContent>
-          // </Dialog>
         )}
         <Button className="rounded-md border border-border text-foreground" disabled={isSending} type="submit" size="icon" variant="outline" >
           <SendHorizontal className="h-4 w-4 text-foreground" />
