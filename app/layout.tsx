@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   openGraph: {
     images: '/og.png',
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+  }
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -159,7 +159,6 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const sendGiftLock = useRef(false)
   const [gift, setGift] = useState("")
   const roomContext = useRoomContext()
-  const textEncoder = useRef(new TextEncoder())
   const textDecoder = useRef(new TextDecoder())
 
   const router = useRouter()
@@ -215,7 +214,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const onDataChannel = useCallback(
     (payload: Uint8Array, participant: RemoteParticipant | undefined) => {
       if (!participant) return console.log("no participant");
-      const data = JSON.parse(textDecoder.current.decode(payload));
+      const data = JSON.parse(new TextDecoder().decode(payload));
       if (data.channelId === "gift") {
         switch (data.payload) {
           case "🎉":
