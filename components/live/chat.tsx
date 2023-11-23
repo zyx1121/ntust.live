@@ -49,6 +49,15 @@ export function useChat(options?: { messageEncoder?: MessageEncoder, messageDeco
 
 export function Gift0() {
   confetti({
+    particleCount: 100,
+    startVelocity: 70,
+    spread: 100,
+    origin: { y: 1 }
+  })
+}
+
+export function Gift1() {
+  confetti({
     angle: 60,
     spread: 55,
     origin: { x: 0, y: 1 }
@@ -121,22 +130,16 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const divRef = useRef<HTMLDivElement>(null)
 
   const { toast } = useToast()
-
   const { users } = useContext(UsersContext)
 
   const chatOptions = useMemo(() => {
     return { messageDecoder, messageEncoder }
   }, [messageDecoder, messageEncoder])
-
   const { send, chatMessages, isSending } = useChat(chatOptions)
 
-  const join = async () => {
-    if (send) await send(`加入了直播間`)
-  }
-
   useEffect(() => {
-    setTimeout(() => {
-      join()
+    setTimeout(async () => {
+      if (send) await send(`加入了直播間`)
     }, 3000)
   }, [send])
 
@@ -155,13 +158,9 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     divRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chatMessages])
 
-  // gift
-  const sendGiftLock = useRef(false)
-  const [gift, setGift] = useState("")
   const roomContext = useRoomContext()
-  const textDecoder = useRef(new TextDecoder())
-
   const router = useRouter()
+
   const update = async (point: string) => {
     await fetch(`/api/users?id=${lp.identity}&point=${point}`, {
       method: "PATCH",
@@ -178,8 +177,6 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const [pointLock, setPointLock] = useState(false)
 
   if (lp.identity && !pointLock) {
-    console.log("lp", lp.identity)
-    console.log("point", users.find((user) => user.id === lp.identity)?.point)
     setPoint(users.find((user) => user.id === lp.identity)?.point as number)
     if (lp.identity) setPointLock(true)
   }
@@ -189,16 +186,16 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       case "🎉":
         setPoint(point - 10)
         update((point - 10).toString())
-        confetti()
+        Gift0()
         break
       case "🎊":
         setPoint(point - 100)
         update((point - 100).toString())
-        Gift0()
+        Gift1()
         break
     }
     sendGift(gift)
-  }, [gift]);
+  }, []);
 
   const sendGift = useCallback(async (gift: string) => {
     try {
@@ -209,7 +206,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     } finally {
 
     }
-  }, [lp, gift])
+  }, [lp])
 
   const onDataChannel = useCallback(
     (payload: Uint8Array, participant: RemoteParticipant | undefined) => {
@@ -218,10 +215,10 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       if (data.channelId === "gift") {
         switch (data.payload) {
           case "🎉":
-            confetti()
+            Gift0()
             break
           case "🎊":
-            Gift0()
+            Gift1()
             break
         }
         toast({
@@ -259,7 +256,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className=" rounded-lg bg-background mb-3 mr-4 p-2 flex gap-2">
-              <DropdownMenuItem key={0} asChild>
+              <DropdownMenuItem asChild>
                 <AlertDialog>
                   <AlertDialogTrigger>
                     <Button className="rounded-sm border border-border text-foreground" size="icon" variant="outline">
@@ -282,7 +279,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                   </AlertDialogContent>
                 </AlertDialog>
               </DropdownMenuItem>
-              <DropdownMenuItem key={1} asChild>
+              <DropdownMenuItem asChild>
                 <AlertDialog>
                   <AlertDialogTrigger>
                     <Button className="rounded-sm border border-border text-foreground" size="icon" variant="outline">
@@ -309,9 +306,9 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                   </AlertDialogContent>
                 </AlertDialog>
               </DropdownMenuItem>
-              <DropdownMenuItem key={2}>🧨</DropdownMenuItem>
-              <DropdownMenuItem key={3}>🎁</DropdownMenuItem>
-              <DropdownMenuItem key={4}>🎈</DropdownMenuItem>
+              <DropdownMenuItem >🧨</DropdownMenuItem>
+              <DropdownMenuItem >🎁</DropdownMenuItem>
+              <DropdownMenuItem >🎈</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
