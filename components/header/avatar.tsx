@@ -45,12 +45,6 @@ export function MyAvatar() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="m-2" />
         <DropdownMenuItem className="py-2 mx-2">
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem className="py-2 mx-2">
-          Store
-        </DropdownMenuItem>
-        <DropdownMenuItem className="py-2 mx-2">
           Point
           <DropdownMenuShortcut>{users.find((user) => user.name === session.user?.name)?.point}</DropdownMenuShortcut>
         </DropdownMenuItem>
@@ -62,7 +56,7 @@ export function MyAvatar() {
         </DropdownMenuItem>
         <DropdownMenuSeparator className="m-2" />
         <DropdownMenuItem className="py-2 mx-2" onClick={() => signOut({ callbackUrl: "/" })}>
-          Login out
+          登出
           <DropdownMenuShortcut>👋</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
