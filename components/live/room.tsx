@@ -30,7 +30,7 @@ export function Room({ room, users, authenticated }: { room: string, users: User
         </GridLayout>
       </div>
       <div className="fixed bottom-4 w-[calc(100%-2rem)] lg:static lg:w-[40rem]" >
-        <Chat room={room} lp={lp} authenticated={authenticated}/>
+        <Chat room={room} lp={lp} authenticated={authenticated} />
       </div>
       <Badge variant="secondary" className="absolute top-8 left-8">
         在線 {ps.length}

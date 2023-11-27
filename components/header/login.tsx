@@ -10,7 +10,7 @@ export function Login() {
       <AlertDialogTrigger asChild>
         <Button variant="secondary" className="h-8" asChild>
           <Link href="/">
-          登入
+            登入
           </Link>
         </Button>
       </AlertDialogTrigger>
