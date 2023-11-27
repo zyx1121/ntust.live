@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { Login } from "@/components/login";
+import { Login } from "@/components/header/login";
 import { UsersContext } from "@/components/provider/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
