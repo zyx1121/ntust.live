@@ -33,7 +33,7 @@ export function useObservableState<T>(observable: Observable<T> | undefined, sta
 
 export function Gift0() {
   confetti({
-    particleCount: 100,
+    particleCount: 300,
     startVelocity: 70,
     spread: 100,
     origin: { y: 1 }
@@ -42,22 +42,26 @@ export function Gift0() {
 
 export function Gift1() {
   confetti({
+    particleCount: 200,
     angle: 60,
     spread: 55,
     origin: { x: 0, y: 1 }
   })
   confetti({
+    particleCount: 200,
     angle: 120,
     spread: 55,
     origin: { x: 1, y: 1 }
   })
   setTimeout(() => {
     confetti({
+      particleCount: 200,
       angle: 60,
       spread: 55,
       origin: { x: 0, y: 0.8 },
     })
     confetti({
+      particleCount: 200,
       angle: 120,
       spread: 55,
       origin: { x: 1, y: 0.8 },
@@ -65,11 +69,13 @@ export function Gift1() {
   }, 200)
   setTimeout(() => {
     confetti({
+      particleCount: 200,
       angle: 60,
       spread: 55,
       origin: { x: 0, y: 0.6 },
     })
     confetti({
+      particleCount: 200,
       angle: 120,
       spread: 55,
       origin: { x: 1, y: 0.6 },
@@ -77,11 +83,13 @@ export function Gift1() {
   }, 400)
   setTimeout(() => {
     confetti({
+      particleCount: 200,
       angle: 60,
       spread: 55,
       origin: { x: 0, y: 0.4 },
     })
     confetti({
+      particleCount: 200,
       angle: 120,
       spread: 55,
       origin: { x: 1, y: 0.4 },
@@ -89,16 +97,96 @@ export function Gift1() {
   }, 600)
   setTimeout(() => {
     confetti({
+      particleCount: 200,
       angle: 60,
       spread: 55,
       origin: { x: 0, y: 0.2 },
     })
     confetti({
+      particleCount: 200,
       angle: 120,
       spread: 55,
       origin: { x: 1, y: 0.2 },
     })
   }, 800)
+}
+
+export function Gift2() {
+  confetti({
+    particleCount: 200,
+    startVelocity: 30,
+    spread: 360,
+    origin: {
+      x: Math.random(),
+      y: Math.random() - 0.2
+    }
+  })
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    })
+  }, 200)
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    })
+  }, 400)
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    })
+  }, 600)
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    })
+  }, 800)
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    })
+  }, 1000)
+  setTimeout(() => {
+    confetti({
+      particleCount: 200,
+      startVelocity: 30,
+      spread: 360,
+      origin: {
+        x: Math.random(),
+        y: Math.random() - 0.2
+      }
+    })
+  }, 1200)
 }
 
 export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -177,6 +265,11 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
         update((point - 100).toString())
         Gift1()
         break
+      case "🧨":
+        setPoint(point - 200)
+        update((point - 200).toString())
+        Gift2()
+        break
     }
     sendGift(gift)
   }, []);
@@ -204,6 +297,9 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
           case "🎊":
             Gift1()
             break
+          case "🧨":
+            Gift2()
+            break
         }
         toast({
           title: "收到來自 " + participant.name + " 的 " + data.payload + " !",
@@ -222,7 +318,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
 
   return (
     <div {...props} className="grid gap-4" >
-      <ScrollArea className="h-[8.5rem] lg:h-[calc(100dvh-9rem-1px)] lg:border rounded-md pb-4">
+      <ScrollArea className="h-[9rem] rounded-md bg-[#00000010] m-4 lg:pb-4 lg:m-0 lg:bg-background lg:h-[calc(100dvh-9rem-1px)] lg:border">
         <ul>
           {chatMessages.map((msg, idx) =>
             <MyChatEntry key={idx} room={room} entry={msg} messageFormatter={messageFormatter} />
@@ -290,9 +386,33 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                   </AlertDialogContent>
                 </AlertDialog>
               </DropdownMenuItem>
-              <DropdownMenuItem >🧨</DropdownMenuItem>
-              <DropdownMenuItem >🎁</DropdownMenuItem>
-              <DropdownMenuItem >🎈</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button className="rounded-sm border border-border text-foreground" size="icon" variant="outline">
+                      🧨
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>贈送 🧨</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        目前持有的點數：{point}
+                        <br />
+                        將花費 200 點數贈送
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      {point >= 0 ? (
+                        <AlertDialogAction onClick={() => sendGiftHandle(point, "🧨")}>送出</AlertDialogAction>
+                      ) : (
+                        <AlertDialogAction >送出</AlertDialogAction>
+                      )}
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
