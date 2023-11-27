@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
-import { setupChat } from "@livekit/components-core"
-import { ChatMessage, ReceivedChatMessage, useRoomContext } from "@livekit/components-react"
+import { ChatMessage, ReceivedChatMessage, useChat, useRoomContext } from "@livekit/components-react"
 import { User } from "@prisma/client"
 import confetti from "canvas-confetti"
 import { DataPacket_Kind, LocalParticipant, RemoteParticipant, RoomEvent } from "livekit-client"
@@ -30,21 +29,6 @@ export function useObservableState<T>(observable: Observable<T> | undefined, sta
     return () => subscription.unsubscribe()
   }, [observable])
   return state
-}
-
-export function useChat(options?: { messageEncoder?: MessageEncoder, messageDecoder?: MessageDecoder }) {
-  const room = useRoomContext()
-  const [setup, setSetup] = useState<ReturnType<typeof setupChat>>()
-  const isSending = useObservableState(setup?.isSendingObservable as Observable<boolean> | undefined, false)
-  const chatMessages = useObservableState(setup?.messageObservable as Observable<ReceivedChatMessage[]> | undefined, [])
-
-  useEffect(() => {
-    const setupChatReturn = setupChat(room, options)
-    setSetup(setupChatReturn)
-    return setupChatReturn.destroy
-  }, [room, options])
-
-  return { send: setup?.send, chatMessages, isSending }
 }
 
 export function Gift0() {
