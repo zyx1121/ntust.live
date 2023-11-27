@@ -32,7 +32,7 @@ export function MyAvatar() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="py-3" align="end" forceMount>
+      <DropdownMenuContent className="py-3 bg-background" align="end" forceMount>
         <DropdownMenuLabel className="font-normal py-2 mx-2">
           <div className="flex flex-col space-y-1">
             <p className="text-sm leading-none">

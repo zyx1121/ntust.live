@@ -36,7 +36,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Header />
               <Separator />
               {children}
-              <Toaster />
+              <div className=" z-10 fixed">
+                <Toaster />
+              </div>
               <Analytics />
             </MyUsersProvider>
           </MySessionProvider>

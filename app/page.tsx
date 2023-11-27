@@ -49,7 +49,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex justify-center items-center h-full">
+    <main className="flex justify-center items-center h-[100%]">
       <div className="grid gap-4">
         <Label className='pl-2'>
           {activeRooms.length > 0 ? '目前有 ' + activeRooms.length + ' 個直播中的房間' : '目前沒有直播中的房間'}
