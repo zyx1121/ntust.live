@@ -81,12 +81,12 @@ export default function Home() {
           )}
         </ScrollArea>
         {status == "authenticated" ?
-        <Button variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === data.user?.name)?.id}`)}>
+        <Button className="border-border" variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === data.user?.name)?.id}`)}>
           {/* <Button onClick={() => handleConfetti()}> */}
           開始直播🔥🔥
         </Button>
         :
-        <Button variant="outline" disabled={true}>
+        <Button className="border-border" variant="outline" disabled={true}>
           <Link href="/">
             登入以建立直播
           </Link>
