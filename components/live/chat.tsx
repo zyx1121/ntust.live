@@ -8,15 +8,14 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
+import { Gift0, Gift1, Gift2 } from "@/lib/gift"
 import { ChatMessage, ReceivedChatMessage, useChat, useRoomContext } from "@livekit/components-react"
 import { User } from "@prisma/client"
-import confetti from "canvas-confetti"
 import { DataPacket_Kind, LocalParticipant, RemoteParticipant, RoomEvent } from "livekit-client"
 import { Gift, SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import type { Observable } from "rxjs"
-
 
 export type MessageEncoder = (message: ChatMessage) => Uint8Array
 export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage
@@ -29,164 +28,6 @@ export function useObservableState<T>(observable: Observable<T> | undefined, sta
     return () => subscription.unsubscribe()
   }, [observable])
   return state
-}
-
-export function Gift0() {
-  confetti({
-    particleCount: 300,
-    startVelocity: 70,
-    spread: 100,
-    origin: { y: 1 }
-  })
-}
-
-export function Gift1() {
-  confetti({
-    particleCount: 200,
-    angle: 60,
-    spread: 55,
-    origin: { x: 0, y: 1 }
-  })
-  confetti({
-    particleCount: 200,
-    angle: 120,
-    spread: 55,
-    origin: { x: 1, y: 1 }
-  })
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.8 },
-    })
-    confetti({
-      particleCount: 200,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.8 },
-    })
-  }, 200)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.6 },
-    })
-    confetti({
-      particleCount: 200,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.6 },
-    })
-  }, 400)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.4 },
-    })
-    confetti({
-      particleCount: 200,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.4 },
-    })
-  }, 600)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.2 },
-    })
-    confetti({
-      particleCount: 200,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.2 },
-    })
-  }, 800)
-}
-
-export function Gift2() {
-  confetti({
-    particleCount: 200,
-    startVelocity: 30,
-    spread: 360,
-    origin: {
-      x: Math.random(),
-      y: Math.random() - 0.2
-    }
-  })
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    })
-  }, 200)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    })
-  }, 400)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    })
-  }, 600)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    })
-  }, 800)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    })
-  }, 1000)
-  setTimeout(() => {
-    confetti({
-      particleCount: 200,
-      startVelocity: 30,
-      spread: 360,
-      origin: {
-        x: Math.random(),
-        y: Math.random() - 0.2
-      }
-    })
-  }, 1200)
 }
 
 export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
