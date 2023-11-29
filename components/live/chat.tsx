@@ -275,14 +275,14 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
   const formattedMessage = useMemo(() => {
     return messageFormatter ? messageFormatter(entry.message) : entry.message
   }, [entry.message, messageFormatter])
-  const time = new Date(entry.timestamp)
-  const locale = navigator ? navigator.language : "en-US"
-
-  let { users } = useContext(UsersContext)
-
-  const owner = users.find((user) => user.id === room)
 
   const router = useRouter()
+  const { users } = useContext(UsersContext)
+
+  const time = new Date(entry.timestamp)
+  const locale = navigator ? navigator.language : "en-US"
+  const owner = users.find((user) => user.id === room)
+
   const update = async (owner: User | undefined, link: string | undefined) => {
     await fetch(`/api/link?id=${owner?.id}&link=${link}`, {
       method: "PATCH",
