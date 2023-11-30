@@ -93,6 +93,20 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   const [point, setPoint] = useState(0)
   const [pointLock, setPointLock] = useState(false)
 
+  const hangup = useCallback(async (point: number) => {
+    setPoint(point + 1)
+    update((point + 1).toString())
+  }, [])
+
+  useEffect(() => {
+    if (lp.identity === room || !authenticated) return
+    let id = setInterval(() => {
+      hangup(point);
+      console.log("get point");
+    }, 5000);
+    return () => clearInterval(id);
+  })
+
   if (lp.identity && !pointLock) {
     setPoint(users.find((user) => user.id === lp.identity)?.point as number)
     if (lp.identity) setPointLock(true)
