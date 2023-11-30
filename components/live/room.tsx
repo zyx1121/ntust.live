@@ -1,8 +1,9 @@
 import { Chat } from "@/components/live/chat"
-import { ControlBar, GridLayout, RoomAudioRenderer, useLocalParticipant, useParticipants, useTracks } from "@livekit/components-react"
+import { GridLayout, RoomAudioRenderer, useLocalParticipant, useParticipants, useTracks } from "@livekit/components-react"
 import { User } from "@prisma/client"
 import { RoomEvent, Track } from "livekit-client"
 import { Badge } from "../ui/badge"
+import { ControlBar } from "./bar"
 import { ParticipantTile } from "./participan"
 
 export function Room({ room, users, authenticated }: { room: string, users: User[], authenticated: boolean }) {

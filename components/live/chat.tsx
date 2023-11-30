@@ -12,10 +12,11 @@ import { Gift0, Gift1, Gift2 } from "@/lib/gift"
 import { ChatMessage, ReceivedChatMessage, useChat, useRoomContext } from "@livekit/components-react"
 import { User } from "@prisma/client"
 import { DataPacket_Kind, LocalParticipant, RemoteParticipant, RoomEvent } from "livekit-client"
-import { Gift, SendHorizontal } from "lucide-react"
+import { Gift, Mic2, RouteOff, SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import type { Observable } from "rxjs"
+import { ToastAction } from "../ui/toast"
 
 export type MessageEncoder = (message: ChatMessage) => Uint8Array
 export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage
@@ -126,6 +127,41 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     }
   }, [lp])
 
+  const sendLinkQuest = useCallback(async (id: string) => {
+    try {
+      const payload: Uint8Array = new TextEncoder().encode(
+        JSON.stringify({ payload: id, channelId: "link" })
+      )
+      await lp.publishData(payload, DataPacket_Kind.LOSSY)
+    } finally {
+
+    }
+  }, [])
+
+  const sendRefresh = useCallback(async () => {
+    try {
+      const payload: Uint8Array = new TextEncoder().encode(
+        JSON.stringify({ payload: "refresh", channelId: "refresh" })
+      )
+      await lp.publishData(payload, DataPacket_Kind.LOSSY)
+    } finally {
+
+    }
+  }, [])
+
+  const updateLink = async (room: string, link: string) => {
+    await fetch(`/api/link?id=${room}&link=${link}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: room,
+        link: link,
+      }),
+    })
+    router.refresh()
+    sendRefresh()
+  }
+
   const onDataChannel = useCallback(
     (payload: Uint8Array, participant: RemoteParticipant | undefined) => {
       if (!participant) return console.log("no participant");
@@ -146,6 +182,19 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
           title: "收到來自 " + participant.name + " 的 " + data.payload + " !",
           description: new Date().toLocaleTimeString(),
         })
+      }
+      if (data.channelId === "link" && lp.identity === room) {
+        toast({
+          title: "收到來自 " + participant.name + " 的連麥請求 !",
+          action: (
+            <ToastAction altText="asdf" onClick={() => updateLink(room, participant.identity)}>
+              接受請求
+            </ToastAction>
+          ),
+        })
+      }
+      if (data.channelId === "refresh") {
+        router.refresh()
       }
     }, []
   )
@@ -169,6 +218,54 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
         <Input className="rounded-md border border-border text-foreground" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
+        {lp.identity === room && users.find((user) => user.id === lp.identity)?.link !== "" && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="rounded-md border border-border text-foreground" type="submit" size="icon" variant="outline" >
+                <RouteOff className="h-4 w-4 text-foreground" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-background">
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  取消連麥
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  取消
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={() => updateLink(room, "")}>
+                  確認
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+        {lp.identity !== room && authenticated && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="rounded-md border border-border text-foreground" type="submit" size="icon" variant="outline" >
+                <Mic2 className="h-4 w-4 text-foreground" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-background">
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  請求連麥
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  取消
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={() => sendLinkQuest(lp.identity)}>
+                  發送請求
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
         {lp.identity !== room && authenticated && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
