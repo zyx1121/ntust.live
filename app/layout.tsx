@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const users = await prisma.user.findMany()
-  return (
+  if (users) return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-[100dvh] bg-background font-mono antialiased grid", fira.variable)} style={{ gridTemplateRows: "3.5rem 1px" }}>
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
