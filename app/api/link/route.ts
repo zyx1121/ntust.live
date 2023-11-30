@@ -22,12 +22,24 @@ export async function GET(
 export async function PATCH(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id")!;
   const link = request.nextUrl.searchParams.get("link")!;
-  let json = await request.json();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  const preLinks = user?.link;
+  let newLinks = [...preLinks!, link];
+
+  if (preLinks?.includes(link)) {
+    newLinks = preLinks?.filter((item) => item !== link);
+  }
 
   const updated_user = await prisma.user.update({
     where: { id },
     data: {
-      link: link,
+      link: (link === "" ? [] : newLinks)
     },
   });
 
@@ -36,24 +48,4 @@ export async function PATCH(request: NextRequest) {
   }
 
   return NextResponse.json(updated_user);
-}
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const id = params.id;
-    await prisma.user.delete({
-      where: { id },
-    });
-
-    return new NextResponse(null, { status: 204 });
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      return new NextResponse("No user with ID found", { status: 404 });
-    }
-
-    return new NextResponse(error.message, { status: 500 });
-  }
 }

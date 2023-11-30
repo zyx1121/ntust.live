@@ -42,7 +42,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  link          String?
+  link          String[]  @default([])
   point         Int       @default(1000)
 }
 

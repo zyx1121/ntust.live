@@ -1,16 +1,57 @@
-import { Label } from '@/components/ui/label';
-import { ParticipantClickEvent, TrackReferenceOrPlaceholder } from '@livekit/components-core';
-import { AudioTrack, ParticipantContextIfNeeded, VideoTrack, useEnsureParticipant, useMaybeTrackContext, useParticipantTile } from '@livekit/components-react';
-import { Participant, Track, TrackPublication } from "livekit-client";
+import type { ParticipantClickEvent, TrackReferenceOrPlaceholder } from '@livekit/components-core';
+import { isTrackReference, isTrackReferencePinned } from '@livekit/components-core';
+import { AudioTrack, ConnectionQualityIndicator, FocusToggle, LockLockedIcon, ParticipantContext, ParticipantName, ScreenShareIcon, TrackMutedIndicator, TrackRefContext, VideoTrack, useEnsureParticipant, useFeatureContext, useIsEncrypted, useMaybeLayoutContext, useMaybeParticipantContext, useMaybeTrackRefContext, useParticipantTile } from '@livekit/components-react';
+import type { Participant, TrackPublication } from 'livekit-client';
+import { Track } from 'livekit-client';
+import * as React from 'react';
 
+export function ParticipantContextIfNeeded(
+  props: React.PropsWithChildren<{
+    participant?: Participant;
+  }>,
+) {
+  const hasContext = !!useMaybeParticipantContext();
+  return props.participant && !hasContext ? (
+    <ParticipantContext.Provider value={props.participant}>
+      {props.children}
+    </ParticipantContext.Provider>
+  ) : (
+    <>{props.children}</>
+  );
+}
+
+/**
+ * Only create a `TrackRefContext` if there is no `TrackRefContext` already.
+ */
+function TrackRefContextIfNeeded(
+  props: React.PropsWithChildren<{
+    trackRef?: TrackReferenceOrPlaceholder;
+  }>,
+) {
+  const hasContext = !!useMaybeTrackRefContext();
+  return props.trackRef && !hasContext ? (
+    <TrackRefContext.Provider value={props.trackRef}>{props.children}</TrackRefContext.Provider>
+  ) : (
+    <>{props.children}</>
+  );
+}
+
+/** @public */
 export interface ParticipantTileProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** The track reference to display. */
+  trackRef?: TrackReferenceOrPlaceholder;
   disableSpeakingIndicator?: boolean;
+  /** @deprecated This parameter will be removed in a future version use `trackRef` instead. */
   participant?: Participant;
+  /** @deprecated This parameter will be removed in a future version use `trackRef` instead. */
   source?: Track.Source;
+  /** @deprecated This parameter will be removed in a future version use `trackRef` instead. */
   publication?: TrackPublication;
   onParticipantClick?: (event: ParticipantClickEvent) => void;
 }
+
 export function ParticipantTile({
+  trackRef,
   participant,
   children,
   source = Track.Source.Camera,
@@ -19,41 +60,96 @@ export function ParticipantTile({
   disableSpeakingIndicator,
   ...htmlProps
 }: ParticipantTileProps) {
-
+  // TODO: remove deprecated props and refactor in a future version.
+  const maybeTrackRef = useMaybeTrackRefContext();
   const p = useEnsureParticipant(participant);
-  const trackRef: TrackReferenceOrPlaceholder = useMaybeTrackContext() ?? {
-    participant: p,
-    source,
-    publication,
-  };
+  const trackReference: TrackReferenceOrPlaceholder = React.useMemo(() => {
+    return {
+      participant: trackRef?.participant ?? maybeTrackRef?.participant ?? p,
+      source: trackRef?.source ?? maybeTrackRef?.source ?? source,
+      publication: trackRef?.publication ?? maybeTrackRef?.publication ?? publication,
+    };
+  }, [maybeTrackRef, p, publication, source, trackRef]);
 
   const { elementProps } = useParticipantTile<HTMLDivElement>({
-    participant: trackRef.participant,
+    participant: trackReference.participant,
     htmlProps,
-    source: trackRef.source,
-    publication: trackRef.publication,
+    source: trackReference.source,
+    publication: trackReference.publication,
     disableSpeakingIndicator,
     onParticipantClick,
   });
+  const isEncrypted = useIsEncrypted(p);
+  const layoutContext = useMaybeLayoutContext();
+
+  const autoManageSubscription = useFeatureContext()?.autoSubscription;
+
+  const handleSubscribe = React.useCallback(
+    (subscribed: boolean) => {
+      if (
+        trackReference.source &&
+        !subscribed &&
+        layoutContext &&
+        layoutContext.pin.dispatch &&
+        isTrackReferencePinned(trackReference, layoutContext.pin.state)
+      ) {
+        layoutContext.pin.dispatch({ msg: 'clear_pin' });
+      }
+    },
+    [trackReference, layoutContext],
+  );
 
   return (
-    <div className="relative" {...elementProps}>
-      <ParticipantContextIfNeeded participant={trackRef.participant}>
-        {trackRef.publication?.kind === 'video' ||
-          trackRef.source === Track.Source.Camera ||
-          trackRef.source === Track.Source.ScreenShare ? (
-          <VideoTrack className='bg-background'
-            manageSubscription={true}
-          />
-        ) : (
-          <AudioTrack />
-        )}
-        <div className="lk-participant-placeholder">
-          <Label className="text-muted-foreground">
-            主播尚未開啟視訊
-          </Label>
-        </div>
-      </ParticipantContextIfNeeded>
-    </div >
+    <div style={{ position: 'relative' }} {...elementProps}>
+      <TrackRefContextIfNeeded trackRef={trackReference}>
+        <ParticipantContextIfNeeded participant={trackReference.participant}>
+          {children ?? (
+            <>
+              {isTrackReference(trackReference) &&
+              (trackReference.publication?.kind === 'video' ||
+                trackReference.source === Track.Source.Camera ||
+                trackReference.source === Track.Source.ScreenShare) ? (
+                <VideoTrack
+                  trackRef={trackReference}
+                  onSubscriptionStatusChanged={handleSubscribe}
+                  manageSubscription={autoManageSubscription}
+                />
+              ) : (
+                isTrackReference(trackReference) && (
+                  <AudioTrack
+                    trackRef={trackReference}
+                    onSubscriptionStatusChanged={handleSubscribe}
+                  />
+                )
+              )}
+              <div className="lk-participant-placeholder">
+                無畫面
+              </div>
+              <div className="lk-participant-metadata">
+                <div className="lk-participant-metadata-item">
+                  {trackReference.source === Track.Source.Camera ? (
+                    <>
+                      {isEncrypted && <LockLockedIcon style={{ marginRight: '0.25rem' }} />}
+                      <TrackMutedIndicator
+                        source={Track.Source.Microphone}
+                        show={'muted'}
+                      ></TrackMutedIndicator>
+                      <ParticipantName />
+                    </>
+                  ) : (
+                    <>
+                      <ScreenShareIcon style={{ marginRight: '0.25rem' }} />
+                      <ParticipantName> 的螢幕</ParticipantName>
+                    </>
+                  )}
+                </div>
+                <ConnectionQualityIndicator className="lk-participant-metadata-item" />
+              </div>
+            </>
+          )}
+          <FocusToggle trackRef={trackReference} />
+        </ParticipantContextIfNeeded>
+      </TrackRefContextIfNeeded>
+    </div>
   );
 }

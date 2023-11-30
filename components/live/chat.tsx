@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
 import { Gift0, Gift1, Gift2 } from "@/lib/gift"
-import { ChatMessage, ReceivedChatMessage, useChat, useRoomContext } from "@livekit/components-react"
-import { User } from "@prisma/client"
+import type { ChatOptions, ReceivedChatMessage } from '@livekit/components-core'
+import { ChatMessage, useChat, useRoomContext } from "@livekit/components-react"
 import { DataPacket_Kind, LocalParticipant, RemoteParticipant, RoomEvent } from "livekit-client"
 import { Gift, Mic2, RouteOff, SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -31,6 +30,10 @@ export function useObservableState<T>(observable: Observable<T> | undefined, sta
   return state
 }
 
+export interface ChatProps extends React.HTMLAttributes<HTMLDivElement>, ChatOptions {
+  messageFormatter?: MessageFormatter;
+}
+
 export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
   messageFormatter?: MessageFormatter
   messageEncoder?: MessageEncoder
@@ -45,6 +48,9 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
 
   const { toast } = useToast()
   const { users } = useContext(UsersContext)
+
+  const roomContext = useRoomContext()
+  const router = useRouter()
 
   const chatOptions = useMemo(() => {
     return { messageDecoder, messageEncoder }
@@ -71,9 +77,6 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   useEffect(() => {
     divRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chatMessages])
-
-  const roomContext = useRoomContext()
-  const router = useRouter()
 
   const update = async (point: string) => {
     await fetch(`/api/users?id=${lp.identity}&point=${point}`, {
@@ -206,6 +209,8 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     }
   }, [onDataChannel, roomContext])
 
+  const linkers = users.find((user) => user.id === room)?.link
+
   return (
     <div {...props} className="grid gap-4" >
       <ScrollArea className="h-[9rem] rounded-md bg-[#00000010] m-4 lg:pb-4 lg:m-0 lg:bg-background lg:h-[calc(100dvh-9rem-1px)] lg:border">
@@ -218,10 +223,10 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
         <Input className="rounded-md border border-border text-foreground" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
-        {lp.identity === room && users.find((user) => user.id === lp.identity)?.link !== "" && (
+        {lp.identity === room && users.find((user) => user.id === lp.identity)?.link.length !== 0 && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="rounded-md border border-border text-foreground" type="submit" size="icon" variant="outline" >
+              <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" >
                 <RouteOff className="h-4 w-4 text-foreground" />
               </Button>
             </AlertDialogTrigger>
@@ -231,28 +236,56 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                   取消連麥
                 </AlertDialogTitle>
               </AlertDialogHeader>
+              {
+                linkers?.map((linker, index) => (
+                  <AlertDialogAction key={index} onClick={() => updateLink(room, linker)}>
+                    {users.find((user) => user.id === linker)?.name}
+                  </AlertDialogAction>
+                ))
+              }
               <AlertDialogFooter>
                 <AlertDialogCancel>
                   取消
                 </AlertDialogCancel>
-                <AlertDialogAction onClick={() => updateLink(room, "")}>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+        {linkers?.includes(lp.identity) && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" >
+                <RouteOff className="h-4 w-4 text-foreground" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-background rounded-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  取消連麥
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  取消
+                </AlertDialogCancel>
+                <AlertDialogAction onClick={() => updateLink(room, lp.identity)}>
                   確認
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         )}
-        {lp.identity !== room && authenticated && (
+        {!linkers?.includes(lp.identity) && lp.identity !== room && authenticated && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className="rounded-md border border-border text-foreground" type="submit" size="icon" variant="outline" >
+              <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" >
                 <Mic2 className="h-4 w-4 text-foreground" />
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-background">
+            <AlertDialogContent className="bg-background rounded-md">
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  請求連麥
+                  與主播連麥
                 </AlertDialogTitle>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -373,45 +406,14 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
     return messageFormatter ? messageFormatter(entry.message) : entry.message
   }, [entry.message, messageFormatter])
 
-  const router = useRouter()
-  const { users } = useContext(UsersContext)
-
   const time = new Date(entry.timestamp)
   const locale = navigator ? navigator.language : "en-US"
-  const owner = users.find((user) => user.id === room)
-
-  const update = async (owner: User | undefined, link: string | undefined) => {
-    await fetch(`/api/link?id=${owner?.id}&link=${link}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: owner?.id,
-        link: link,
-      }),
-    })
-    router.refresh()
-  }
 
   if (formattedMessage !== "abc") return (
     <li className="lk-chat-entry p-4 pb-0" title={time.toLocaleTimeString(locale, { timeStyle: "full" })} data-lk-message-origin={entry.from?.isLocal ? "local" : "remote"} {...props}>
       <div className="flex gap-2">
         <div className="mb-auto mt-0">
-          <Popover>
-            <PopoverTrigger>
-              <MyAvatar identity={entry.from?.identity} />
-            </PopoverTrigger>
-            <PopoverContent>
-              {owner?.link === entry.from?.identity ? (
-                <Button onClick={() => update(owner, "")} variant="secondary" className="mr-4">
-                  Disconnect
-                </Button>
-              ) : (
-                <Button onClick={() => update(owner, users.find((user) => user.name === entry.from?.name)?.id)} variant="secondary" className="mr-4">
-                  Connect
-                </Button>
-              )}
-            </PopoverContent>
-          </Popover>
+          <MyAvatar identity={entry.from?.identity} />
         </div>
         <Label className="h-6 leading-6 text-muted-foreground" style={{ whiteSpace: "nowrap" }}>{entry.from?.name}</Label>
         <span className="box-border break-words w-fit p-0 leading-6 text-foreground bg-transparent" style={{ wordBreak: "break-word" }}>
