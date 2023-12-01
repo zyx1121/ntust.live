@@ -29,14 +29,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const users = await prisma.user.findMany()
 
   const jsonLd = {
-    '@context': 'https://ntust.live',
-    '@type': 'Organization',
-    'url': 'https://ntust.live',
-    'logo': 'https://ntust.live/og.png',
-    URL: 'https://ntust.live',
-    name: 'NTUST.Live',
-    description: 'NTUST Live | 台科直播平台',
-    Image: 'https://ntust.live/og.png',
+    "@context": "https://schema.org/",
+    "@type": "WebSite",
+    "name": "NTUST Live",
+    "url": "https://ntust.live",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://ntust.live/{search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   }
 
   if (users) return (
