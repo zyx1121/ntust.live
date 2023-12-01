@@ -1,22 +1,14 @@
-'use client'
+"use client"
 
-import Link from "next/link";
-
-import { Login } from "@/components/header/login";
-import { UsersContext } from "@/components/provider/users";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useContext } from "react";
-
+import { Login } from "@/components/header/login"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
 
 export function MyAvatar() {
   const { data: session } = useSession()
-  const { users } = useContext(UsersContext);
-
-  const router = useRouter();
 
   if (session) return (
     <DropdownMenu>
@@ -44,11 +36,6 @@ export function MyAvatar() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="m-2" />
-        <DropdownMenuItem className="py-2 mx-2">
-          Point
-          <DropdownMenuShortcut>{users.find((user) => user.name === session.user?.name)?.point}</DropdownMenuShortcut>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator className="m-2" />
         <DropdownMenuItem className="py-2 mx-2" asChild>
           <Link href="https://github.com/zyx1121/ntust.live" target="_blank" rel="noopener noreferrer">
             Github
@@ -61,8 +48,8 @@ export function MyAvatar() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
   else return (
-    <Login/>
-  );
+    <Login />
+  )
 }

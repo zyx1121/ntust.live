@@ -1,9 +1,10 @@
-import Link from "next/link";
-import { Badge } from "../ui/badge";
-import { Label } from "../ui/label";
-import { MyAvatar } from "./avatar";
-import { Path } from "./path";
-import { ThemeToggle } from "./theme";
+import Link from "next/link"
+import { Badge } from "../ui/badge"
+import { Label } from "../ui/label"
+import { MyAvatar } from "./avatar"
+import { Path } from "./path"
+import { Point } from "./point"
+import { ThemeToggle } from "./theme"
 
 export function Header() {
   return (
@@ -19,6 +20,7 @@ export function Header() {
         </Badge>
         <Path />
       </div>
+      <Point />
       <ThemeToggle />
       <MyAvatar />
     </header>

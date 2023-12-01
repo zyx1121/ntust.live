@@ -35,7 +35,7 @@ export function Room({ room, users, authenticated }: { room: string, users: User
       </div>
       {(lp.identity == streamer) || linkers?.includes(lp.identity) ? (
         <>
-          <ControlBar className="absolute top-9 left-9 p-0" style={{ border: "none" }} variation='minimal' controls={{ leave: false, camera: true, microphone: true, screenShare: true, chat: false }} />
+          <ControlBar className="absolute top-9 left-9 p-0" style={{ border: "none" }} variation="minimal" controls={{ leave: false, camera: true, microphone: true, screenShare: true, chat: false }} />
           <Badge variant="secondary" className="absolute top-24 left-12">
             在線 {ps.length}
           </Badge>

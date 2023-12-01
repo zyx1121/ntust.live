@@ -20,7 +20,7 @@ export function RoomList() {
 
   const getRooms = async () => {
     try {
-      const resp = await fetch(`/api/room?user=${data?.user?.name}`, { method: 'GET' })
+      const resp = await fetch(`/api/room?user=${data?.user?.name}`, { method: "GET" })
       const d = await resp.json()
       setRooms(d.rooms)
     } catch (e) {
@@ -35,15 +35,14 @@ export function RoomList() {
   useEffect(() => {
     let id = setInterval(() => {
       getRooms();
-      console.log('get rooms');
-    }, 3000);
+    }, 2000);
     return () => clearInterval(id);
   }, [])
 
   return (
     <>
-      <Label className='pl-2'>
-        {activeRooms.length > 0 ? '目前有 ' + activeRooms.length + ' 個直播中的房間' : '目前沒有直播中的房間'}
+      <Label className="pl-2">
+        {activeRooms.length > 0 ? "目前有 " + activeRooms.length + " 個直播中的房間" : "目前沒有直播中的房間"}
       </Label>
       <ScrollArea className="w-[calc(100dvw-2rem)] h-[calc(100dvh-11.25rem)] sm:h-[40dvh] sm:w-[616px] rounded-md border">
         <Button variant="ghost" className="w-full rounded-none justify-start" key="title">
@@ -67,7 +66,7 @@ export function RoomList() {
                 </Label>
               </Link>
             </Button>
-            <Separator className="" />
+            <Separator />
           </>
         )}
       </ScrollArea>

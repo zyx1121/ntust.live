@@ -19,7 +19,7 @@ export const fira = Fira_Code({
 export const metadata: Metadata = {
   metadataBase: new URL('https://ntust.live'),
   title: 'NTUST.Live',
-  description: 'NTUST Live Streaming Platform',
+  description: 'NTUST Live | 台科直播平台',
   openGraph: {
     images: '/og.png',
   },
@@ -27,8 +27,23 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const users = await prisma.user.findMany()
+
+  const jsonLd = {
+    '@context': 'https://ntust.live',
+    '@type': 'Organization',
+    'url': 'https://ntust.live',
+    'logo': 'https://ntust.live/og.png',
+    URL: 'https://ntust.live',
+    name: 'NTUST.Live',
+    description: 'NTUST Live | 台科直播平台',
+  }
+
   if (users) return (
     <html lang="en" suppressHydrationWarning>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <body className={cn("min-h-[100dvh] bg-background font-mono antialiased grid", fira.variable)} style={{ gridTemplateRows: "3.5rem 1px" }}>
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MySessionProvider>

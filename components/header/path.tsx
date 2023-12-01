@@ -1,13 +1,15 @@
-'use client'
+"use client"
 
-import { UsersContext } from "@/components/provider/users";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { useSelectedLayoutSegments } from 'next/navigation';
-import { useContext } from "react";
+import { UsersContext } from "@/components/provider/users"
+import { Label } from "@/components/ui/label"
+import copy from 'copy-to-clipboard'
+import { useSelectedLayoutSegments } from "next/navigation"
+import { useContext } from "react"
+import { useToast } from "../ui/use-toast"
 
 export function Path() {
-  const { users } = useContext(UsersContext);
+  const { toast } = useToast()
+  const { users } = useContext(UsersContext)
   const segments = useSelectedLayoutSegments()
 
   return (
@@ -17,13 +19,16 @@ export function Path() {
           <Label className="mx-4 text-muted-foreground font-thin">
             /
           </Label>
-          <Label key={index} asChild>
-            <Link href={segment}>
-              {users.find((user) => user.id === segment)?.name}
-            </Link>
+          <Label className="cursor-pointer" key={index} onClick={() => {
+            copy(`https://ntust.live/${segment}`)
+            toast({
+              title: "已複製直播網址 🎉",
+            })
+          }}>
+            {users.find((user) => user.id === segment)?.name}
           </Label>
         </>
       ))}
     </>
-  );
+  )
 }

@@ -13,16 +13,20 @@ export function Start() {
   const { data: data, status: status } = useSession()
 
   if (status === "authenticated") return (
-    <Button className="border-border" variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === data.user?.name)?.id}`)}>
+    <Button className="border-border" variant="outline" onClick={() => router.push(`/${users.find((user) => user.email === data.user?.email)?.id}`)}>
       開始直播🔥🔥
     </Button>
   )
 
-  return (
+  if (status === "unauthenticated") return (
     <Button className="border-border" variant="outline" disabled={true}>
       <Link href="/">
         登入以建立直播
       </Link>
     </Button>
+  )
+
+  return (
+    <Button className="border-border" variant="outline" disabled={true} />
   )
 }

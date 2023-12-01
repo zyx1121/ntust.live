@@ -29,6 +29,7 @@
     "canvas-confetti": "^1.9.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "copy-to-clipboard": "^3.3.3",
     "livekit-client": "^1.15.2",
     "livekit-server-sdk": "^1.2.7",
     "lucide-react": "^0.293.0",
