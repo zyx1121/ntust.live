@@ -27,28 +27,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const users = await prisma.user.findMany()
-
-  const jsonLd = {
-    "@context": "https://schema.org/",
-    "@type": "WebSite",
-    "name": "NTUST Live",
-    "url": "https://ntust.live",
-    "sameAs": ["https://github.com/zyx1121/ntust.live"],
-    "description": "台科直播平台",
-    "image": "https://ntust.live/og.png",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://ntust.live/{search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-
   if (users) return (
     <html lang="en" suppressHydrationWarning>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       <body className={cn("min-h-[100dvh] bg-background font-mono antialiased grid", fira.variable)} style={{ gridTemplateRows: "3.5rem 1px" }}>
         <MyThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MySessionProvider>

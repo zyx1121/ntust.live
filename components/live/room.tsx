@@ -26,7 +26,7 @@ export function Room({ room, users, authenticated }: { room: string, users: User
   return (
     <div className="relative flex items-stretch h-full p-4 gap-4 bg-background">
       <div className="flex flex-col items-stretch w-full lg:h-[calc(100dvh-5.5rem-1px)] h-[calc(100dvh-9rem-1px)] border rounded-md">
-        <GridLayout className="h-[200px]" tracks={hostTracks}>
+        <GridLayout tracks={hostTracks}>
           <ParticipantTile />
         </GridLayout>
       </div>

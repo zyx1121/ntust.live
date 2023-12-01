@@ -1,6 +1,6 @@
 import type { ParticipantClickEvent, TrackReferenceOrPlaceholder } from "@livekit/components-core"
 import { isTrackReference, isTrackReferencePinned } from "@livekit/components-core"
-import { AudioTrack, ConnectionQualityIndicator, FocusToggle, LockLockedIcon, ParticipantContext, ParticipantName, ScreenShareIcon, TrackMutedIndicator, TrackRefContext, VideoTrack, useEnsureParticipant, useFeatureContext, useIsEncrypted, useMaybeLayoutContext, useMaybeParticipantContext, useMaybeTrackRefContext, useParticipantTile } from "@livekit/components-react"
+import { AudioTrack, ConnectionQualityIndicator, LockLockedIcon, ParticipantContext, ParticipantName, ScreenShareIcon, TrackMutedIndicator, TrackRefContext, VideoTrack, useEnsureParticipant, useFeatureContext, useIsEncrypted, useMaybeLayoutContext, useMaybeParticipantContext, useMaybeTrackRefContext, useParticipantTile } from "@livekit/components-react"
 import type { Participant, TrackPublication } from "livekit-client"
 import { Track } from "livekit-client"
 import * as React from "react"
@@ -113,7 +113,7 @@ export function ParticipantTile({
                   />
                 )
               )}
-              <div className="lk-participant-placeholder">
+              <div className="lk-participant-placeholder text-foreground">
                 無畫面
               </div>
               <div className="lk-participant-metadata">
@@ -138,7 +138,6 @@ export function ParticipantTile({
               </div>
             </>
           )}
-          <FocusToggle trackRef={trackReference} />
         </ParticipantContextIfNeeded>
       </TrackRefContextIfNeeded>
     </div>

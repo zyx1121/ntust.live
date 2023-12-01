@@ -22,7 +22,7 @@ export default function Page({ params }: { params: { room: string } }) {
 
   const anonymous = generateAnonymous()
   const room = params.room
-  const id = users?.find((user) => user.name === session.data?.user?.name)?.id ?? anonymous
+  const id = users?.find((user) => user.email === session.data?.user?.email)?.id ?? anonymous
   const name = session.data?.user?.name ?? anonymous
   const control = id === room ? true : false
 

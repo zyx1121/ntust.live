@@ -90,27 +90,36 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
     router.refresh()
   }
 
-  const [point, setPoint] = useState(0)
+  let [point, setPoint] = useState(0)
   const [pointLock, setPointLock] = useState(false)
-
-  const hangup = useCallback(async (point: number) => {
-    setPoint(point + 1)
-    update((point + 1).toString())
-  }, [])
-
-  useEffect(() => {
-    if (lp.identity === room || !authenticated) return
-    let id = setInterval(() => {
-      hangup(point);
-      console.log("get point");
-    }, 5000);
-    return () => clearInterval(id);
-  })
 
   if (lp.identity && !pointLock) {
     setPoint(users.find((user) => user.id === lp.identity)?.point as number)
     if (lp.identity) setPointLock(true)
   }
+
+  const getPoint = useCallback(async (point: number, gets: number) => {
+    setPoint(point + gets)
+    update((point + gets).toString())
+  }, [])
+
+  useEffect(() => {
+    if (lp.identity === room || !authenticated) return
+    let id = setInterval(() => {
+      getPoint(point, 1);
+    }, 5000);
+    return () => clearInterval(id);
+  })
+
+  const [gets, setGets] = useState(0)
+
+  useEffect(() => {
+    if (gets === 0) return
+
+    getPoint(point, gets);
+
+    setGets(0)
+  }, [gets])
 
   const sendGiftHandle = useCallback(async (point: number, gift: string) => {
     switch (gift) {
@@ -187,15 +196,18 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
         switch (data.payload) {
           case "🎉":
             Gift0()
+            if (lp.identity === room) setGets(10)
             break
           case "🎊":
             Gift1()
+            if (lp.identity === room) setGets(100)
             break
           case "🧨":
             Gift2()
+            if (lp.identity === room) setGets(200)
             break
         }
-        toast({
+        if (lp.identity === room) toast({
           title: "收到來自 " + participant.name + " 的 " + data.payload + " !",
           description: new Date().toLocaleTimeString(),
         })
@@ -227,7 +239,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
 
   return (
     <div {...props} className="grid gap-4" >
-      <ScrollArea className="h-[9rem] rounded-md bg-[#00000010] m-4 lg:pb-4 lg:m-0 lg:bg-background lg:h-[calc(100dvh-9rem-1px)] lg:border">
+      <ScrollArea className=" h-[9rem] rounded-md bg-[#00000040] m-4 lg:pb-4 lg:m-0 lg:bg-background lg:h-[calc(100dvh-9rem-1px)] lg:border">
         <ul>
           {chatMessages.map((msg, idx) =>
             <MyChatEntry key={idx} room={room} entry={msg} messageFormatter={messageFormatter} />
@@ -429,8 +441,8 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
         <div className="mb-auto mt-0">
           <MyAvatar identity={entry.from?.identity} />
         </div>
-        <Label className="h-6 leading-6 text-muted-foreground" style={{ whiteSpace: "nowrap" }}>{entry.from?.name}</Label>
-        <span className="box-border break-words w-fit p-0 leading-6 text-foreground bg-transparent" style={{ wordBreak: "break-word" }}>
+        <Label className="h-6 leading-6 text-[#ffffff80] lg:text-muted-foreground" style={{ whiteSpace: "nowrap" }}>{entry.from?.name}</Label>
+        <span className="box-border break-words w-fit p-0 leading-6 lg:text-foreground bg-transparent" style={{ wordBreak: "break-word" }}>
           {formattedMessage}
         </span>
       </div>
