@@ -33,6 +33,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     "@type": "WebSite",
     "name": "NTUST Live",
     "url": "https://ntust.live",
+    "sameAs": ["https://github.com/zyx1121/ntust.live"],
+    "description": "台科直播平台",
+    "image": "https://ntust.live/og.png",
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://ntust.live/{search_term_string}",
