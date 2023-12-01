@@ -36,6 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     URL: 'https://ntust.live',
     name: 'NTUST.Live',
     description: 'NTUST Live | 台科直播平台',
+    Image: 'https://ntust.live/og.png',
   }
 
   if (users) return (
