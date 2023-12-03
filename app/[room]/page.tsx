@@ -1,14 +1,12 @@
 "use client"
 
-import "@livekit/components-styles"
-
-
 import { Room } from "@/components/live/room"
 import { UsersContext } from "@/components/provider/users"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { generateAnonymous } from "@/lib/anonymous"
 import { LiveKitRoom } from "@livekit/components-react"
+import "@livekit/components-styles"
 import { useSession } from "next-auth/react"
 import { Fira_Code } from "next/font/google"
 import Link from "next/link"
@@ -19,6 +17,7 @@ const fira = Fira_Code({ subsets: ["latin"] })
 export default function Page({ params }: { params: { room: string } }) {
   const session = useSession()
   const users = useContext(UsersContext).users
+  const [token, setToken] = useState("")
 
   const anonymous = generateAnonymous()
   const room = params.room
@@ -26,7 +25,6 @@ export default function Page({ params }: { params: { room: string } }) {
   const name = session.data?.user?.name ?? anonymous
   const control = id === room ? true : false
 
-  const [token, setToken] = useState("")
   useEffect(() => {
     (async () => {
       try {
@@ -41,18 +39,18 @@ export default function Page({ params }: { params: { room: string } }) {
     })();
   }, [session.status])
 
-  if (session.status == "loading" || !users) return (
-    <main className="flex justify-center items-center h-full">
-      <Label className="text-center text-muted-foreground">
-        正在驗證身份...
-      </Label>
-    </main>
-  )
-
   if (token == "") return (
     <main className="flex justify-center items-center h-full">
       <Label className="text-center text-muted-foreground">
         正在建立連線...
+      </Label>
+    </main>
+  )
+
+  if (session.status == "loading" || !users) return (
+    <main className="flex justify-center items-center h-full">
+      <Label className="text-center text-muted-foreground">
+        正在驗證身份...
       </Label>
     </main>
   )
