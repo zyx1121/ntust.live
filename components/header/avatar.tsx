@@ -8,15 +8,15 @@ import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 
 export function MyAvatar() {
-  const { data: session } = useSession()
+  const session = useSession()
 
-  if (session) return (
+  if (session.data) return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            {session?.user?.image && session?.user?.name ? (
-              <AvatarImage src={session.user.image} alt={session.user.name} />
+            {session?.data.user?.image && session.data?.user?.name ? (
+              <AvatarImage src={session.data.user.image} alt={session.data.user.name} />
             ) : (
               <></>
             )}
@@ -28,10 +28,10 @@ export function MyAvatar() {
         <DropdownMenuLabel className="font-normal py-2 mx-2">
           <div className="flex flex-col space-y-1">
             <p className="text-sm leading-none">
-              {session?.user?.name ? (session.user.name) : (null)}
+              {session.data?.user?.name ? (session.data.user.name) : (null)}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {session?.user?.email ? (session.user.email) : (null)}
+              {session.data?.user?.email ? (session.data.user.email) : (null)}
             </p>
           </div>
         </DropdownMenuLabel>

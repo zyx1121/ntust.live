@@ -24,7 +24,6 @@
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.75rem;
-    --lk-bg2: 0 0% 98%;
   }
 
   .dark {
@@ -50,15 +49,14 @@
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
-    --lk-grid-gap: 1rem;
-    --lk-bg2: var(--background);
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    --lk-grid-gap: 1rem;
+    --lk-bg2: var(--background);
   }
 
   html {

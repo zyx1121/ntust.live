@@ -1,4 +1,4 @@
-import MyAvatar from "@/components/live/avatar"
+import MessageAvatar from "@/components/live/avatar"
 import { UsersContext } from "@/components/provider/users"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
@@ -8,41 +8,23 @@ import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/components/ui/use-toast"
 import { Gift0, Gift1, Gift2 } from "@/lib/gift"
-import type { ChatOptions, ReceivedChatMessage } from '@livekit/components-core'
-import { ChatMessage, useChat, useRoomContext } from "@livekit/components-react"
+import type { ReceivedChatMessage } from "@livekit/components-core"
+import { MessageDecoder, MessageEncoder, MessageFormatter, useChat, useRoomContext } from "@livekit/components-react"
 import { DataPacket_Kind, LocalParticipant, RemoteParticipant, RoomEvent } from "livekit-client"
 import { Gift, Mic2, RouteOff, SendHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import type { Observable } from "rxjs"
 import { ToastAction } from "../ui/toast"
-
-export type MessageEncoder = (message: ChatMessage) => Uint8Array
-export type MessageDecoder = (message: Uint8Array) => ReceivedChatMessage
-
-export function useObservableState<T>(observable: Observable<T> | undefined, startWith: T) {
-  const [state, setState] = useState<T>(startWith)
-  useEffect(() => {
-    if (typeof window === "undefined" || !observable) return
-    const subscription = observable.subscribe(setState)
-    return () => subscription.unsubscribe()
-  }, [observable])
-  return state
-}
-
-export interface ChatProps extends React.HTMLAttributes<HTMLDivElement>, ChatOptions {
-  messageFormatter?: MessageFormatter;
-}
 
 export interface ChatProps extends React.HTMLAttributes<HTMLDivElement> {
   messageFormatter?: MessageFormatter
   messageEncoder?: MessageEncoder
   messageDecoder?: MessageDecoder
   room: string
-  lp: LocalParticipant
+  localParticipant: LocalParticipant
   authenticated: boolean
 }
-export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, lp, authenticated, ...props }: ChatProps) {
+export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, localParticipant, authenticated, ...props }: ChatProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const divRef = useRef<HTMLDivElement>(null)
 
@@ -79,11 +61,11 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   }, [chatMessages])
 
   const update = async (point: string) => {
-    await fetch(`/api/users?id=${lp.identity}&point=${point}`, {
+    await fetch(`/api/users?id=${localParticipant.identity}&point=${point}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: lp.identity,
+        id: localParticipant.identity,
         point: point,
       }),
     })
@@ -93,9 +75,9 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   let [point, setPoint] = useState(0)
   const [pointLock, setPointLock] = useState(false)
 
-  if (lp.identity && !pointLock) {
-    setPoint(users.find((user) => user.id === lp.identity)?.point as number)
-    if (lp.identity) setPointLock(true)
+  if (localParticipant.identity && !pointLock) {
+    setPoint(users.find((user) => user.id === localParticipant.identity)?.point as number)
+    if (localParticipant.identity) setPointLock(true)
   }
 
   const getPoint = useCallback(async (point: number, gets: number) => {
@@ -104,7 +86,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   }, [])
 
   useEffect(() => {
-    if (lp.identity === room || !authenticated) return
+    if (localParticipant.identity === room || !authenticated) return
     let id = setInterval(() => {
       getPoint(point, 1);
     }, 5000);
@@ -147,18 +129,18 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       const payload: Uint8Array = new TextEncoder().encode(
         JSON.stringify({ payload: gift, channelId: "gift" })
       )
-      await lp.publishData(payload, DataPacket_Kind.LOSSY)
+      await localParticipant.publishData(payload, DataPacket_Kind.LOSSY)
     } finally {
 
     }
-  }, [lp])
+  }, [localParticipant])
 
   const sendLinkQuest = useCallback(async (id: string) => {
     try {
       const payload: Uint8Array = new TextEncoder().encode(
         JSON.stringify({ payload: id, channelId: "link" })
       )
-      await lp.publishData(payload, DataPacket_Kind.LOSSY)
+      await localParticipant.publishData(payload, DataPacket_Kind.LOSSY)
     } finally {
 
     }
@@ -169,7 +151,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       const payload: Uint8Array = new TextEncoder().encode(
         JSON.stringify({ payload: "refresh", channelId: "refresh" })
       )
-      await lp.publishData(payload, DataPacket_Kind.LOSSY)
+      await localParticipant.publishData(payload, DataPacket_Kind.LOSSY)
     } finally {
 
     }
@@ -196,23 +178,23 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
         switch (data.payload) {
           case "🎉":
             Gift0()
-            if (lp.identity === room) setGets(10)
+            if (localParticipant.identity === room) setGets(10)
             break
           case "🎊":
             Gift1()
-            if (lp.identity === room) setGets(100)
+            if (localParticipant.identity === room) setGets(100)
             break
           case "🧨":
             Gift2()
-            if (lp.identity === room) setGets(200)
+            if (localParticipant.identity === room) setGets(200)
             break
         }
-        if (lp.identity === room) toast({
+        if (localParticipant.identity === room) toast({
           title: "收到來自 " + participant.name + " 的 " + data.payload + " !",
           description: new Date().toLocaleTimeString(),
         })
       }
-      if (data.channelId === "link" && lp.identity === room) {
+      if (data.channelId === "link" && localParticipant.identity === room) {
         toast({
           title: "收到來自 " + participant.name + " 的連麥請求 !",
           action: (
@@ -249,7 +231,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
       </ScrollArea>
       <form className="flex gap-3" onSubmit={handleSubmit} >
         <Input className="rounded-md border border-border text-foreground" disabled={isSending} ref={inputRef} type="text" placeholder="..." />
-        {lp.identity === room && users.find((user) => user.id === lp.identity)?.link.length !== 0 && (
+        {localParticipant.identity === room && users.find((user) => user.id === localParticipant.identity)?.link.length !== 0 && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" >
@@ -277,7 +259,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
             </AlertDialogContent>
           </AlertDialog>
         )}
-        {linkers?.includes(lp.identity) && (
+        {linkers?.includes(localParticipant.identity) && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" >
@@ -294,14 +276,14 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                 <AlertDialogCancel>
                   取消
                 </AlertDialogCancel>
-                <AlertDialogAction onClick={() => updateLink(room, lp.identity)}>
+                <AlertDialogAction onClick={() => updateLink(room, localParticipant.identity)}>
                   確認
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         )}
-        {!linkers?.includes(lp.identity) && lp.identity !== room && authenticated && (
+        {!linkers?.includes(localParticipant.identity) && localParticipant.identity !== room && authenticated && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline" >
@@ -318,14 +300,14 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                 <AlertDialogCancel>
                   取消
                 </AlertDialogCancel>
-                <AlertDialogAction onClick={() => sendLinkQuest(lp.identity)}>
+                <AlertDialogAction onClick={() => sendLinkQuest(localParticipant.identity)}>
                   發送請求
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         )}
-        {lp.identity !== room && authenticated && (
+        {localParticipant.identity !== room && authenticated && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="rounded-md border border-border text-foreground" size="icon" variant="outline">
@@ -365,7 +347,7 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>贈送 🎉</AlertDialogTitle>
+                      <AlertDialogTitle>贈送 🎊</AlertDialogTitle>
                       <AlertDialogDescription>
                         目前持有的點數：{point}
                         <br />
@@ -421,7 +403,6 @@ export function Chat({ messageFormatter, messageDecoder, messageEncoder, room, l
   )
 }
 
-export type MessageFormatter = (message: string) => string
 export interface ChatEntryProps extends React.HTMLAttributes<HTMLLIElement> {
   room: string
   entry: ReceivedChatMessage
@@ -432,14 +413,11 @@ export function MyChatEntry({ room, entry, messageFormatter, ...props }: ChatEnt
     return messageFormatter ? messageFormatter(entry.message) : entry.message
   }, [entry.message, messageFormatter])
 
-  const time = new Date(entry.timestamp)
-  const locale = navigator ? navigator.language : "en-US"
-
   if (formattedMessage !== "abc") return (
-    <li className="lk-chat-entry p-4 pb-0" title={time.toLocaleTimeString(locale, { timeStyle: "full" })} data-lk-message-origin={entry.from?.isLocal ? "local" : "remote"} {...props}>
+    <li className="lk-chat-entry p-4 pb-0" data-lk-message-origin={entry.from?.isLocal ? "local" : "remote"} {...props}>
       <div className="flex gap-2">
         <div className="mb-auto mt-0">
-          <MyAvatar identity={entry.from?.identity} />
+          <MessageAvatar identity={entry.from?.identity} />
         </div>
         <Label className="h-6 leading-6 text-[#ffffff80] lg:text-muted-foreground" style={{ whiteSpace: "nowrap" }}>{entry.from?.name}</Label>
         <span className="box-border break-words w-fit p-0 leading-6 lg:text-foreground bg-transparent" style={{ wordBreak: "break-word" }}>

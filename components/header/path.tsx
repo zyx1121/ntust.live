@@ -2,14 +2,14 @@
 
 import { UsersContext } from "@/components/provider/users"
 import { Label } from "@/components/ui/label"
-import copy from 'copy-to-clipboard'
+import copy from "copy-to-clipboard"
 import { useSelectedLayoutSegments } from "next/navigation"
 import { useContext } from "react"
 import { useToast } from "../ui/use-toast"
 
 export function Path() {
-  const { toast } = useToast()
-  const { users } = useContext(UsersContext)
+  const toast = useToast().toast
+  const users = useContext(UsersContext).users
   const segments = useSelectedLayoutSegments()
 
   return (

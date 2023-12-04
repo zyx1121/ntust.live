@@ -12,18 +12,22 @@ import { Fira_Code } from "next/font/google"
 import Link from "next/link"
 import { useContext, useEffect, useState } from "react"
 
-const fira = Fira_Code({ subsets: ["latin"] })
+const fira = Fira_Code({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
 
 export default function Page({ params }: { params: { room: string } }) {
   const session = useSession()
   const users = useContext(UsersContext).users
-  const [token, setToken] = useState("")
 
   const anonymous = generateAnonymous()
   const room = params.room
   const id = users?.find((user) => user.email === session.data?.user?.email)?.id ?? anonymous
   const name = session.data?.user?.name ?? anonymous
   const control = id === room ? true : false
+
+  const [token, setToken] = useState("")
 
   useEffect(() => {
     (async () => {
@@ -39,7 +43,7 @@ export default function Page({ params }: { params: { room: string } }) {
     })();
   }, [session.status])
 
-  if (token == "") return (
+  if (token === "") return (
     <main className="flex justify-center items-center h-full">
       <Label className="text-center text-muted-foreground">
         正在建立連線...
@@ -47,7 +51,7 @@ export default function Page({ params }: { params: { room: string } }) {
     </main>
   )
 
-  if (session.status == "loading" || !users) return (
+  if (session.status === "loading" || !users) return (
     <main className="flex justify-center items-center h-full">
       <Label className="text-center text-muted-foreground">
         正在驗證身份...
@@ -55,7 +59,7 @@ export default function Page({ params }: { params: { room: string } }) {
     </main>
   )
 
-  if (session.status == "authenticated" && users.find((user) => user.id === room)) return (
+  if (session.status === "authenticated" && users.find((user) => user.id === room)) return (
     <main>
       <LiveKitRoom
         data-lk-theme="default"
@@ -71,7 +75,7 @@ export default function Page({ params }: { params: { room: string } }) {
     </main>
   )
 
-  if (session.status == "unauthenticated") return (
+  if (session.status === "unauthenticated") return (
     <main>
       <LiveKitRoom
         data-lk-theme="default"
@@ -82,7 +86,7 @@ export default function Page({ params }: { params: { room: string } }) {
         style={{ height: "100%" }}
         className={fira.className}
       >
-        <Room room={room} users={users} authenticated={false}/>
+        <Room room={room} users={users} authenticated={false} />
       </LiveKitRoom>
     </main>
   )

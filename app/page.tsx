@@ -1,8 +1,5 @@
 'use client'
 
-import confetti from 'canvas-confetti'
-import Link from "next/link"
-
 import { UsersContext } from '@/components/provider/users'
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -10,31 +7,27 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Room } from "livekit-server-sdk"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 
 export default function Home() {
   const router = useRouter()
-  const {data: data, status: status} = useSession()
+  const session = useSession()
   const users = useContext(UsersContext).users
 
   const [rooms, setRooms] = useState([])
-
   const activeRooms = rooms.filter((room: Room) => room.numParticipants > 0)
 
   const getRooms = async () => {
     try {
-      const resp = await fetch(`/api/room?user=${data?.user?.name}`, { method: 'GET' })
-      const d = await resp.json()
-      setRooms(d.rooms)
+      const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' })
+      const data = await resp.json()
+      setRooms(data.rooms)
     } catch (e) {
       console.log(e)
     }
   }
-
-  useEffect(() => {
-    getRooms()
-  }, [])
 
   useEffect(() => {
     let id = setInterval(() => {
@@ -44,9 +37,7 @@ export default function Home() {
     return () => clearInterval(id);
   }, [])
 
-  const handleConfetti = () => {
-    confetti();
-  };
+  if (session.status === "loading") return
 
   return (
     <main className="flex justify-center items-center h-[100%]">
@@ -64,10 +55,10 @@ export default function Home() {
             </Label>
           </Button>
           <Separator />
-          {rooms.map((room: Room, index) => room.numParticipants > 0 &&
-            <div key={index}>
-              <Button variant="ghost" className="w-full rounded-none justify-start" key={room.name} asChild>
-                <Link href={room.name}>
+          {activeRooms.map((room: Room) =>
+            <>
+              <Button key={room.name} variant="ghost" className="w-full rounded-none justify-start" asChild>
+                <Link key={room.name} href={room.name}>
                   <Label className="flex-1 text-left">
                     {users.find((user) => user.id === room.name)?.name}
                   </Label>
@@ -77,21 +68,18 @@ export default function Home() {
                 </Link>
               </Button>
               <Separator className="" />
-            </div>
+            </>
           )}
         </ScrollArea>
-        {status == "authenticated" ?
-        <Button className="border-border" variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === data.user?.name)?.id}`)}>
-          {/* <Button onClick={() => handleConfetti()}> */}
-          開始直播🔥🔥
-        </Button>
-        :
-        <Button className="border-border" variant="outline" disabled={true}>
-          <Link href="/">
+        {session.status == "authenticated" ? (
+          <Button className="border-border" variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === session.data.user?.name)?.id}`)}>
+            開始直播🔥🔥
+          </Button>
+        ) : (
+          <Button className="border-border" variant="outline" disabled={true}>
             登入以建立直播
-          </Link>
-        </Button>
-        }
+          </Button>
+        )}
       </div>
     </main >
   )

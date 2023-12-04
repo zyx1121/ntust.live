@@ -55,7 +55,7 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
   },
-  "description": "NTUST Live",
+  "description": "NTUST Live - A live streaming platform for NTUST students.",
   "main": "next.config.js",
   "directories": {
     "lib": "lib"
