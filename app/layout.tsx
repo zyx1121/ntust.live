@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster"
 import prisma from "@/lib/prisma"
 import { cn } from "@/lib/utils"
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import { Fira_Code } from "next/font/google"
 
@@ -37,6 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="fixed z-10">
                 <Toaster />
               </div>
+              <SpeedInsights />
               <Analytics />
             </SessionClientProvider>
           </UsersProvider>
