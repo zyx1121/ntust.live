@@ -49,14 +49,14 @@ export function Room({ room, users, authenticated }: { room: string, users: User
           <Badge variant="secondary" className="absolute top-24 left-12">
             在線 {participants.length}
           </Badge>
-          {!isMobile && <Slider className="absolute top-[6.5rem] left-32 w-32" defaultValue={[0.5]} max={1} step={0.1} onValueChange={(v) => {setSliderValue(v.at(0)!); router.refresh()}} />}
+          {!isMobile && <Slider className="absolute top-[6.5rem] left-32 w-32" defaultValue={[0.5]} max={1} step={0.1} onValueChange={(v) => setSliderValue(v.at(0)!)} />}
         </>
       ) : (
         <>
           <Badge variant="secondary" className="absolute top-12 left-12">
             在線 {participants.length}
           </Badge>
-          {!isMobile && <Slider className="absolute top-14 left-32 w-32" defaultValue={[0.5]} max={1} step={0.1} onValueChange={(v) => {setSliderValue(v.at(0)!); router.refresh()}} />}
+          {!isMobile && <Slider className="absolute top-14 left-32 w-32" defaultValue={[0.5]} max={1} step={0.1} onValueChange={(v) => setSliderValue(v.at(0)!)} />}
         </>
       )}
       <RoomAudioRenderer volume={sliderValue} />
