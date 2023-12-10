@@ -57,7 +57,6 @@ export function Room({ room, users, authenticated }: { room: string, users: User
         </>
       )}
       <RoomAudioRenderer volume={sliderValue} />
-      {sliderValue}
     </div>
   )
 }
