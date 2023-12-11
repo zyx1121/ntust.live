@@ -21,8 +21,7 @@ export default function Home() {
 
   const getRooms = async () => {
     try {
-      // const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' })
-      const resp = await fetch('/api/room', { method: 'GET' })
+      const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' })
       const data = await resp.json()
       setRooms(data.rooms)
     } catch (e) {

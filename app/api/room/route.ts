@@ -2,14 +2,14 @@ import { Room, RoomServiceClient } from "livekit-server-sdk"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
-  // const user = req.nextUrl.searchParams.get("user")
+  const user = req.nextUrl.searchParams.get("user")
 
-  // if (!user) {
-  //   return NextResponse.json(
-  //     { error: "Missing user query parameter" },
-  //     { status: 400 }
-  //   )
-  // }
+  if (!user) {
+    return NextResponse.json(
+      { error: "Missing user query parameter" },
+      { status: 400 }
+    )
+  }
 
   const apiKey = process.env.LIVEKIT_API_KEY
   const apiSecret = process.env.LIVEKIT_API_SECRET
