@@ -21,7 +21,8 @@ export default function Home() {
 
   const getRooms = async () => {
     try {
-      const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' })
+      // const resp = await fetch(`/api/room?user=${session.data?.user?.name}`, { method: 'GET' })
+      const resp = await fetch('/api/room', { method: 'GET' })
       const data = await resp.json()
       setRooms(data.rooms)
     } catch (e) {
@@ -31,11 +32,10 @@ export default function Home() {
 
   useEffect(() => {
     let id = setInterval(() => {
-      getRooms();
-      console.log('get rooms');
-    }, 2000);
-    return () => clearInterval(id);
-  }, [])
+      getRooms()
+    }, 2000)
+    return () => clearInterval(id)
+  })
 
   if (session.status === "loading") return
 
