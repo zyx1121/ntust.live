@@ -59,7 +59,7 @@ export default function Page({ params }: { params: { room: string } }) {
     </main>
   )
 
-  if (session.status === "authenticated" && users.find((user) => user.id === room)) return (
+  if (users.find((user) => user.id === room)) return (
     <main>
       <LiveKitRoom
         data-lk-theme="default"
@@ -70,23 +70,7 @@ export default function Page({ params }: { params: { room: string } }) {
         style={{ height: "100%" }}
         className={fira.className}
       >
-        <Room room={room} users={users} authenticated={true} />
-      </LiveKitRoom>
-    </main>
-  )
-
-  if (session.status === "unauthenticated") return (
-    <main>
-      <LiveKitRoom
-        data-lk-theme="default"
-        serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-        token={token}
-        video={control}
-        audio={control}
-        style={{ height: "100%" }}
-        className={fira.className}
-      >
-        <Room room={room} users={users} authenticated={false} />
+        <Room room={room} users={users} authenticated={session.status === "authenticated"} />
       </LiveKitRoom>
     </main>
   )

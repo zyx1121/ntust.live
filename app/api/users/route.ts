@@ -9,7 +9,6 @@ export async function GET(request: Request) {
 export async function PATCH(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id")!;
   const point = request.nextUrl.searchParams.get("point")!;
-  let json = await request.json();
 
   const updated_user = await prisma.user.update({
     where: { id },

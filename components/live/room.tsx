@@ -2,7 +2,6 @@ import { useMobile } from "@/lib/utils"
 import { GridLayout, RoomAudioRenderer, useLocalParticipant, useParticipants, useTracks } from "@livekit/components-react"
 import { User } from "@prisma/client"
 import { RoomEvent, Track } from "livekit-client"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Badge } from "../ui/badge"
 import { Slider } from "../ui/slider"
@@ -13,8 +12,6 @@ import { ParticipantTile } from "./participan"
 export function Room({ room, users, authenticated }: { room: string, users: User[], authenticated: boolean }) {
   const localParticipant = useLocalParticipant().localParticipant
   const participants = useParticipants()
-
-  const router = useRouter()
 
   const streamer = room
   const linkers = users.find((user) => user.id === room)?.link

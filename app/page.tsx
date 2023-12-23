@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { UsersContext } from '@/components/provider/users'
+import { UsersContext } from "@/components/provider/users"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -71,7 +71,9 @@ export default function Home() {
           )}
         </ScrollArea>
         {session.status == "authenticated" ? (
-          <Button className="border-border" variant="outline" onClick={() => router.push(`/${users.find((user) => user.name === session.data.user?.name)?.id}`)}>
+          <Button className="border-border" variant="outline" onClick={() =>
+            router.push(`/${users.find((user) => user.name === session.data.user?.name)?.id}`)
+          }>
             開始直播🔥🔥
           </Button>
         ) : (
